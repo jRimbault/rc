@@ -1,0 +1,10 @@
+# system management
+alias service="sudo service"
+alias svim="sudoedit"
+alias apt="sudo apt"
+
+# list aliases
+alias ls="ls --color=never --group-directories-first"
+alias lsa="ls -A"
+alias ll="ls -lh"
+alias l="ls -lha"

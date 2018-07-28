@@ -1,0 +1,34 @@
+# goes up the directory tree by $# amount
+up() {
+  local var
+  if [[ "$#" -lt 1 ]]; then
+    cd ..
+  else
+    var=""
+    for ((i=0; i<$1; i++)); do
+      var="../$var"
+    done
+    cd "$var" || exit
+  fi
+}
+
+# colorizing man-pages
+man() {
+  env LESS_TERMCAP_mb=$'\e[36m'  \
+  LESS_TERMCAP_md=$'\e[36m'    \
+  LESS_TERMCAP_me=$'\e[0m'    \
+  LESS_TERMCAP_se=$'\e[0m'    \
+  LESS_TERMCAP_so=$'\e[1m'    \
+  LESS_TERMCAP_ue=$'\e[0m'    \
+  LESS_TERMCAP_us=$'\e[31m'    \
+  man "$@"
+}
+
+# swap two files
+function swap() {
+  local TMPFILE=$(mktemp)
+  mv "$1" "$TMPFILE"
+  mv "$2" "$1"
+  mv "$TMPFILE" "$2"
+  rm "$TMPFILE"
+}
