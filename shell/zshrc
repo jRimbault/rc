@@ -8,10 +8,12 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-export EDITOR="vim"
+N_PREFIX="$HOME/.local/n"
 
 PATH="$PATH:$HOME/.local/bin"
+PATH="$PATH:$N_PREFIX/bin"
 PATH="$PATH:$HOME/.cargo/bin"
-PATH="$PATH:$HOME/.npm/modules/bin"
 
 export PATH
+export N_PREFIX
+export EDITOR="vim"

@@ -8,8 +8,8 @@ setup_scripts()
 {
   echo "Installing scripts"
   mkdir -p "$HOME/.local/bin"
-  cp "$DIR/*" "$HOME/.local/bin/"
-  chmod 744 "$HOME/.local/bin/*"
+  cp "$DIR"/* "$HOME/.local/bin"
+  chmod 744 "$HOME/.local/bin"/*
   echo "Done installing scripts"
 }
 

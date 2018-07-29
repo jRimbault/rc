@@ -2,6 +2,7 @@ curl
 git
 htop
 lnav
+make
 mpv
 pandoc
 shellcheck

@@ -10,9 +10,7 @@ setup_home()
   mkdir -p "$HOME/.local/bin"
   mkdir -p "$HOME/.npm"
   cp "$DIR/vim" "$HOME/.vimrc"
-  cp "$DIR/npm" "$HOME/.npmrc"
   cp "$DIR/gitconfig" "$HOME/.gitconfig"
-  cp "$DIR/zsh" "$HOME/.zshrc"
   echo "Done setting up the home directory"
 }
 
