@@ -13,7 +13,7 @@ get_packages()
 
 install_system_packages()
 {
-  echo "Setting up the system packages"
+  echo "Installing system packages"
   local packages
   packages=($(get_packages apt))
   sudo apt-get update -q
@@ -39,13 +39,23 @@ node_managed_installer()
 
 install_npm_packages()
 {
-  echo "Setting up the npm packages"
+  echo "Installing npm packages"
   local packages
   packages=($(get_packages npm))
   ~/.local/n/bin/npm install -g --silent "${packages[@]}"
   echo "Npm packages installed"
 }
 
+install_pip_packages()
+{
+  echo "Installing pip packages"
+  local packages
+  packages=($(get_packages pip))
+  pip3 install --user -qq "${packages[@]}"
+  echo "Pip packages installed"
+}
+
 install_system_packages
 node_managed_installer &&
 install_npm_packages
+install_pip_packages

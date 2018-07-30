@@ -5,6 +5,8 @@ lnav
 make
 mpv
 pandoc
+python3
+python3-pip
 shellcheck
 tree
 vim
