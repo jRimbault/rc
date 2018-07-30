@@ -19,18 +19,25 @@ usage()
   exit 0
 }
 
-get_apt_packages()
+get_packages()
 {
-  cat "$BASE_DIR/packages/apt"
+  cat "$BASE_DIR/packages/$1"
+}
+
+display_list()
+{
+  local package
+  echo "List of $1 packages to be installed :"
+  for package in $(get_packages "$1"); do
+    echo " $package"
+  done
 }
 
 list_packages()
 {
-  echo "List of system packages to be installed :"
-  for package in $(get_apt_packages); do
-    echo " $package"
-  done
-  exit 0
+  display_list apt
+  display_list npm
+  display_list pip
 }
 
 update()
@@ -42,12 +49,12 @@ update()
 
 main()
 {
-  for DIR in "$BASE_DIR"/*; do
-    [ -d "$DIR" ] || continue;
-    [ -f "$DIR/setup.sh" ] || continue;
-    bash "$DIR/setup.sh"
+  local dir
+  for dir in "$BASE_DIR"/*; do
+    [ -d "$dir" ] || continue;
+    [ -f "$dir/setup.sh" ] || continue;
+    bash "$dir/setup.sh"
   done
-  exit 0
 }
 
 args()
@@ -58,14 +65,17 @@ args()
         usage
         ;;
       -p|--packages)
-        list_packages
+        list_packages | less
+        exit 0
         ;;
       i|install)
         main
+        exit 0
         ;;
       u|update)
         update &&
         bash "$BASE_DIR/setup.sh" install
+        exit 0
         ;;
     esac
     shift
