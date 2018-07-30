@@ -20,7 +20,7 @@ get_packages()
   cat "$DIR/$1"
 }
 
-install_system_packages()
+install_apt_packages()
 {
   echo "Installing system packages"
   local packages
@@ -28,6 +28,16 @@ install_system_packages()
   sudo apt-get update -q
   sudo apt-get install -qy "${packages[@]}"
   sudo apt-get autoremove -qy
+  echo "System packages installed"
+}
+
+install_pacman_packages()
+{
+  echo "Installing system packages"
+  local packages
+  packages=($(get_packages pacman))
+  sudo pacman -Syy
+  sudo pacman -S "${packages[@]}"
   echo "System packages installed"
 }
 
@@ -64,10 +74,30 @@ install_pip_packages()
   echo "Pip packages installed"
 }
 
-main()
+debian()
 {
   has "apt-get" && \
-    install_system_packages && \
+    install_apt_packages && \
+    return 0
+  return 1
+}
+
+archlinux()
+{
+  has "pacman" && \
+    install_pacman_packages && \
+    return 0
+  return 1
+}
+
+system_packages()
+{
+  debian || archlinux
+}
+
+main()
+{
+  system_packages && \
     install_pip_packages
   node_managed_installer && \
     install_npm_packages

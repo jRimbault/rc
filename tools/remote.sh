@@ -2,6 +2,7 @@
 
 set -euo pipefail
 umask g-wx,o-wx
+readonly CLONE_DIR="$HOME/github.com/jRimbault"
 
 check_command()
 {
@@ -13,8 +14,8 @@ check_command()
 
 git_clone()
 {
-  mkdir -p "$HOME/github.com/jRimbault"
-  env git clone https://github.com/jRimbault/rc.git "$HOME/github.com/jRimbault/rc" || {
+  mkdir -p "$CLONE_DIR"
+  env git clone https://github.com/jRimbault/rc.git "$CLONE_DIR/rc" || {
     echo "Error: git clone of configuration repo failed"
     exit 1
   }
@@ -22,7 +23,7 @@ git_clone()
 
 install()
 {
-  bash "$HOME/github.com/jRimbault/rc/setup.sh" install
+  bash "$CLONE_DIR/rc/setup.sh" install
 }
 
 main()
