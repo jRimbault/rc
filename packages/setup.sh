@@ -6,6 +6,15 @@ readonly DIR="$(dirname "$(readlink -e "$0")")"
 readonly N_PREFIX="$HOME/.local/n"
 
 
+has()
+{
+  command -v "$1" > /dev/null 2>&1 || {
+    echo "Error: $1 is not installed"
+    return 1
+  }
+  return 0
+}
+
 get_packages()
 {
   cat "$DIR/$1"
@@ -42,7 +51,7 @@ install_npm_packages()
   echo "Installing npm packages"
   local packages
   packages=($(get_packages npm))
-  ~/.local/n/bin/npm install -g --silent "${packages[@]}"
+  "$N_PREFIX"/bin/npm install -g --silent "${packages[@]}"
   echo "Npm packages installed"
 }
 
@@ -55,7 +64,13 @@ install_pip_packages()
   echo "Pip packages installed"
 }
 
-install_system_packages
-node_managed_installer &&
-install_npm_packages
-install_pip_packages
+main()
+{
+  has "apt-get" && \
+    install_system_packages && \
+    install_pip_packages
+  node_managed_installer && \
+    install_npm_packages
+}
+
+main
