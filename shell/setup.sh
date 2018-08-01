@@ -2,6 +2,7 @@
 
 set -euo pipefail
 readonly DIR="$(dirname "$(readlink -e "$0")")"
+source "$(dirname "$DIR")/shell/function"
 
 
 install_ohmyzsh()
@@ -21,10 +22,10 @@ setup_shell()
 {
   echo "Copying over shell profile, aliases, and function"
   mkdir -p "$HOME/.oh-my-zsh/custom/themes"
-  cp "$DIR/zshrc" "$HOME/.zshrc"
-  cp "$DIR/alias" "$HOME/.oh-my-zsh/custom/alias.zsh"
-  cp "$DIR/function" "$HOME/.oh-my-zsh/custom/function.zsh"
-  cp "$DIR/symbols.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/symbols.zsh-theme"
+  soft_force_symlink "$DIR/zshrc" "$HOME/.zshrc"
+  soft_force_symlink "$DIR/alias" "$HOME/.oh-my-zsh/custom/alias.zsh"
+  soft_force_symlink "$DIR/function" "$HOME/.oh-my-zsh/custom/function.zsh"
+  soft_force_symlink "$DIR/symbols.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/symbols.zsh-theme"
   echo "Shell profile installed"
 }
 
