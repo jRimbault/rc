@@ -71,7 +71,8 @@ install_pip_packages()
   echo "Installing pip packages"
   local packages
   packages=($(get_packages pip))
-  pip3 install --user -qq "${packages[@]}"
+  python3 -m pip install --upgrade pip
+  python3 -m pip install --user -qq "${packages[@]}"
   echo "Pip packages installed"
 }
 

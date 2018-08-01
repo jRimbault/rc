@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 
 # goes up the directory tree by $# amount
 up()
@@ -37,7 +38,7 @@ swap()
   rm "$TMPFILE"
 }
 
-# recursive archiving to make funny named nodes
+# archiving to make funny named files
 archive()
 {
   local file
@@ -46,10 +47,9 @@ archive()
     echo "$1 doesn't exist"
     return 1
   fi
-  if [ -f "$file" ]; then
-    archive "$file"
-    return $?
-  fi
+  while [ -f "$file" ]; do
+    file="$file.old"
+  done
   echo "Archived to : $file"
   mv "$1" "$file"
 }
@@ -65,5 +65,5 @@ soft_force_symlink()
   if [ -n "$(diff --brief "$2" "$1")" ]; then
     archive "$2"
   fi
-  ln -s "$1" "$2"
+  ln -sf "$1" "$2"
 }
