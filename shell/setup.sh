@@ -24,7 +24,7 @@ setup_shell()
   cp "$DIR/zshrc" "$HOME/.zshrc"
   cp "$DIR/alias" "$HOME/.oh-my-zsh/custom/alias.zsh"
   cp "$DIR/function" "$HOME/.oh-my-zsh/custom/function.zsh"
-  cp "$DIR/λ.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/λ.zsh-theme"
+  cp "$DIR/symbols.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/symbols.zsh-theme"
   echo "Shell profile installed"
 }
 
