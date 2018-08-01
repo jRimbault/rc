@@ -2,9 +2,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="λ"
 
-plugins=(
-  git
-)
+plugins=()
 
 source $ZSH/oh-my-zsh.sh
 
