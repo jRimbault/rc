@@ -1,5 +1,7 @@
+
 # goes up the directory tree by $# amount
-up() {
+up()
+{
   local var
   if [[ "$#" -lt 1 ]]; then
     cd ..
@@ -13,7 +15,8 @@ up() {
 }
 
 # colorizing man-pages
-man() {
+man()
+{
   env LESS_TERMCAP_mb=$'\e[36m'  \
   LESS_TERMCAP_md=$'\e[36m'    \
   LESS_TERMCAP_me=$'\e[0m'    \
@@ -25,10 +28,42 @@ man() {
 }
 
 # swap two files
-function swap() {
+swap()
+{
   local TMPFILE=$(mktemp)
   mv "$1" "$TMPFILE"
   mv "$2" "$1"
   mv "$TMPFILE" "$2"
   rm "$TMPFILE"
+}
+
+# recursive archiving to make funny named nodes
+archive()
+{
+  local file
+  file="$1.old"
+  if [ ! -f "$1" ]; then
+    echo "$1 doesn't exist"
+    return 1
+  fi
+  if [ -f "$file" ]; then
+    archive "$file"
+    return $?
+  fi
+  echo "Archived to : $file"
+  mv "$1" "$file"
+}
+
+# automatic symlinking
+# archive the old file if exists
+soft_force_symlink()
+{
+  if [ ! -f "$2" ]; then
+    ln -s "$1" "$2"
+    return $?
+  fi
+  if [ -n "$(diff --brief "$2" "$1")" ]; then
+    archive "$2"
+  fi
+  ln -s "$1" "$2"
 }
