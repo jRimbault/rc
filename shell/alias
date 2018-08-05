@@ -2,6 +2,7 @@
 alias service='sudo service'
 alias svim='sudoedit'
 alias apt='sudo apt'
+alias zshconfig='$EDITOR ~/.zshrc'
 
 # list aliases
 alias ls='ls --color=never --group-directories-first'
