@@ -1,3 +1,14 @@
 [user]
-    email = jacques.rimbault@gmail.com
-    name = jRimbault
+	email = jacques.rimbault@gmail.com
+	name = jRimbault
+[alias]
+	# depends on the 'legit' package
+	switch = !legit switch
+	sync = !legit sync
+	publish = !legit publish
+	unpublish = !legit unpublish
+	undo = !legit undo
+	branches = !legit branches
+
+	# logging
+	tree = "!. ~/.githelper.sh && pretty_git_log"
