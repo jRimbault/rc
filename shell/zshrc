@@ -6,6 +6,8 @@ plugins=()
 
 source $ZSH/oh-my-zsh.sh
 
+# Disable colors in tab completion
+zstyle ':completion:*' list-colors
 
 # Environment variables :
 
