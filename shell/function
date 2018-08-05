@@ -41,17 +41,8 @@ swap()
 # archiving to make funny named files
 archive()
 {
-  local file
-  file="$1.old"
-  if [ ! -f "$1" ]; then
-    echo "$1 doesn't exist"
-    return 1
-  fi
-  while [ -f "$file" ]; do
-    file="$file.old"
-  done
-  echo "Archived to : $file"
-  mv "$1" "$file"
+  echo "Archiving old '$1'"
+  mv --backup=numbered "$1" "$1.bak"
 }
 
 # automatic symlinking
