@@ -24,7 +24,7 @@ get_packages()
 install_apt_packages()
 {
   echo "Installing system packages"
-  local packages
+  local -a packages
   packages=($(get_packages apt))
   sudo apt-get update -qq
   sudo apt-get install -qq "${packages[@]}"
@@ -35,7 +35,7 @@ install_apt_packages()
 install_pacman_packages()
 {
   echo "Installing system packages"
-  local packages
+  local -a packages
   packages=($(get_packages pacman))
   sudo pacman -Syyq
   sudo pacman -Sq "${packages[@]}"
@@ -46,7 +46,7 @@ node_managed_installer()
 {
   echo "Installing n, the nodejs manager"
   local url
-  url="https://git.io/n-install"
+  url="https://raw.github.com/mklement0/n-install/stable/bin/n-install"
   mkdir -p "$HOME/.local"
   export N_PREFIX
   set +e
@@ -60,7 +60,7 @@ node_managed_installer()
 install_npm_packages()
 {
   echo "Installing npm packages"
-  local packages
+  local -a packages
   packages=($(get_packages npm))
   "$N_PREFIX"/bin/npm install -g --silent "${packages[@]}"
   echo "Npm packages installed"
@@ -69,7 +69,7 @@ install_npm_packages()
 install_pip_packages()
 {
   echo "Installing pip packages"
-  local packages
+  local -a packages
   packages=($(get_packages pip))
   python3 -m pip install --upgrade pip
   python3 -m pip install --user -qq "${packages[@]}"
@@ -78,18 +78,14 @@ install_pip_packages()
 
 debian()
 {
-  has "apt-get" && \
-    install_apt_packages && \
-    return 0
-  return 1
+  has "apt-get" || return 1
+  install_apt_packages
 }
 
 archlinux()
 {
-  has "pacman" && \
-    install_pacman_packages && \
-    return 0
-  return 1
+  has "pacman" || return 1
+  install_pacman_packages
 }
 
 system_packages()

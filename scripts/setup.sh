@@ -13,7 +13,7 @@ setup_scripts()
   for script in "$DIR"/*; do
     soft_force_symlink "$script" "$HOME/.local/bin/$(basename "$script")"
   done
-  rm "$HOME/.local/bin/setup.sh"
+  rm "$HOME/.local/bin/$(readlink -e "$0")"
   chmod 744 "$HOME/.local/bin"/*
   echo "Done installing scripts"
 }
