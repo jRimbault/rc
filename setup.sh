@@ -11,6 +11,10 @@
 
 set -euo pipefail
 readonly BASE_DIR="$(dirname "$(readlink -e "$0")")"
+readonly LOG_FILE="/tmp/$(basename "$0").log"
+
+exec >  >(tee -ia "$LOG_FILE")
+exec 2> >(tee -ia "$LOG_FILE" >&2)
 
 
 usage()
