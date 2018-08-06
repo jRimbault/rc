@@ -12,7 +12,7 @@ install_ohmyzsh()
   url="https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh"
   sudo chsh -s "$(command -v zsh)" "$USER"
   set +e
-  wget "$url" -O - | sh
+  wget -qO - "$url" | sh
   set -e
   echo "Oh-My-Zsh installed"
 }

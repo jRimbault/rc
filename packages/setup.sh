@@ -26,9 +26,9 @@ install_apt_packages()
   echo "Installing system packages"
   local packages
   packages=($(get_packages apt))
-  sudo apt-get update -q
-  sudo apt-get install -qy "${packages[@]}"
-  sudo apt-get autoremove -qy
+  sudo apt-get update -qq
+  sudo apt-get install -qq "${packages[@]}"
+  sudo apt-get autoremove -qq
   echo "System packages installed"
 }
 
@@ -37,8 +37,8 @@ install_pacman_packages()
   echo "Installing system packages"
   local packages
   packages=($(get_packages pacman))
-  sudo pacman -Syy
-  sudo pacman -S "${packages[@]}"
+  sudo pacman -Syyq
+  sudo pacman -Sq "${packages[@]}"
   echo "System packages installed"
 }
 
@@ -50,7 +50,7 @@ node_managed_installer()
   mkdir -p "$HOME/.local"
   export N_PREFIX
   set +e
-  curl -L "$url" | bash -s -- -y lts
+  curl -L "$url" | bash -s -- -q lts
   set -e
   PATH="$PATH:$N_PREFIX/bin"
   export PATH
