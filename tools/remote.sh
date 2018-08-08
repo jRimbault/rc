@@ -4,12 +4,24 @@ set -euo pipefail
 umask g-wx,o-wx
 readonly CLONE_DIR="$HOME/github.com/jRimbault"
 
-check_command()
+has()
 {
   command -v "$1" > /dev/null 2>&1 || {
     echo "Error: $1 is not installed"
-    exit 1
+    return 1
   }
+  return 0
+}
+
+has_sudo_rights()
+{
+  sudo -nv 2> /dev/null || {
+    echo "Error: $USER should have sudo rights to :"
+    echo " - install system packages"
+    echo " - change default shell"
+    return 1
+  }
+  return 0
 }
 
 git_clone()
@@ -21,16 +33,17 @@ git_clone()
   }
 }
 
-install()
+install_all()
 {
   bash "$CLONE_DIR/rc/setup.sh" install
 }
 
 main()
 {
-  check_command "git"
+  has "git" || exit 1
+  has_sudo_rights || exit 1
   git_clone
-  install
+  install_all
   env zsh -l
 }
 
