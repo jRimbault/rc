@@ -61,7 +61,7 @@ main()
   done
 }
 
-args()
+main()
 {
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -89,6 +89,6 @@ args()
 
 # do not execute script if it is sourced or downloaded-piped to bash
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
-  args "$@"
+  main "$@"
   usage
 fi

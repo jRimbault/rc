@@ -17,7 +17,6 @@ install_ohmyzsh()
   echo "Oh-My-Zsh installed"
 }
 
-
 setup_shell()
 {
   echo "Copying over shell profile, aliases, and function"
@@ -29,5 +28,13 @@ setup_shell()
   echo "Shell profile installed"
 }
 
-install_ohmyzsh
-setup_shell
+main()
+{
+  install_ohmyzsh
+  setup_shell
+}
+
+# do not execute script if it is sourced or downloaded-piped to bash
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  main "$@"
+fi

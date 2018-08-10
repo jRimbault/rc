@@ -3,7 +3,6 @@
 set -euo pipefail
 readonly DIR="$(dirname "$(readlink -e "$0")")"
 source "$(dirname "$DIR")/shell/function"
-readonly BASE_NAME=$(basename "$0")
 
 
 setup_scripts()
@@ -13,9 +12,17 @@ setup_scripts()
   for script in "$DIR"/*; do
     soft_force_symlink "$script" "$HOME/.local/bin/$(basename "$script")"
   done
-  rm "$HOME/.local/bin/$(readlink -e "$0")"
+  rm "$HOME/.local/bin/$(basename "$0")"
   chmod 744 "$HOME/.local/bin"/*
   echo "Done installing scripts"
 }
 
-setup_scripts
+main()
+{
+  setup_scripts
+}
+
+# do not execute script if it is sourced or downloaded-piped to bash
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  main "$@"
+fi

@@ -2,6 +2,10 @@ _USER_CHAR="${_USER_CHAR:-λ}"
 _INSERT_CHAR="${_INSERT_CHAR:-›}"
 
 
+if [[ -n $SSH_CONNECTION ]]; then
+  _USER_CHAR="$USER@$HOST"
+fi
+
 minimal_vcs() {
   local stat_color="%{${fg[white]}%}" # assume it is clean
   local branch_name
@@ -26,9 +30,7 @@ status_prompt() {
 }
 
 prompt() {
-  local ret_status
-  ret_status="$(status_prompt $_USER_CHAR)"
-  echo "$ret_status $_INSERT_CHAR "
+  echo "$_USER_CHAR $(status_prompt "$_INSERT_CHAR") "
 }
 
 # single quotes to evaluate at runtime, not source time

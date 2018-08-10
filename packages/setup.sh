@@ -101,4 +101,7 @@ main()
     install_npm_packages
 }
 
-main
+# do not execute script if it is sourced or downloaded-piped to bash
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  main "$@"
+fi
