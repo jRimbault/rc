@@ -44,6 +44,7 @@ install_pacman_packages()
 
 node_managed_installer()
 {
+  [[ "$(command -v n)" = *"$N_PREFIX"* ]] && return 1
   echo "Installing n, the nodejs manager"
   local url
   url="https://raw.github.com/mklement0/n-install/stable/bin/n-install"

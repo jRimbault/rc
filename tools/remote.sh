@@ -13,17 +13,6 @@ has()
   return 0
 }
 
-has_sudo_rights()
-{
-  sudo -nv 2> /dev/null || {
-    echo "Error: $USER should have sudo rights to :"
-    echo " - install system packages"
-    echo " - change default shell"
-    return 1
-  }
-  return 0
-}
-
 git_clone()
 {
   mkdir -p "$CLONE_DIR"
@@ -41,7 +30,6 @@ install_all()
 main()
 {
   has "git" || exit 1
-  has_sudo_rights || exit 1
   git_clone
   install_all
   env zsh -l
