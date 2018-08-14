@@ -13,4 +13,4 @@
 	branches = !legit branches
 
 	# logging
-	tree = "!. ~/.githelper.sh && pretty_git_log"
+	tree = "!. ~/.config/git/helper.sh && pretty_git_log"
