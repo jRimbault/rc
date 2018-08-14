@@ -12,6 +12,7 @@ setup_home()
   mkdir -p "$HOME/.npm"
   soft_force_symlink "$DIR/vim" "$HOME/.vimrc"
   soft_force_symlink "$DIR/gitconfig" "$HOME/.gitconfig"
+  soft_force_symlink "$DIR/gitignore" "$HOME/.gitignore"
   soft_force_symlink "$DIR/githelper.sh" "$HOME/.githelper.sh"
   echo "Done setting up the home directory"
 }
