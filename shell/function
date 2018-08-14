@@ -57,3 +57,18 @@ soft_force_symlink()
   fi
   ln -sf "$1" "$2"
 }
+
+# update my dotfiles
+dotfiles_update()
+{
+  local witness
+  local rc_clone
+  witness="$HOME/.zshrc"
+  rc_clone="$(dirname "$(readlink -e "$witness")")"
+  {
+    cd "$rc_clone" &&
+    git fetch &&
+    git reset --hard origin/master
+  }
+  env zsh -l
+}
