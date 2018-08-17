@@ -104,5 +104,8 @@ main()
 
 # do not execute script if it is sourced or downloaded-piped to bash
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  if [[ "$1" = "update" ]]; then
+   exit 0
+  fi
   main "$@"
 fi

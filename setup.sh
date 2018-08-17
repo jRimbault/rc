@@ -53,11 +53,13 @@ update()
 
 main()
 {
+  local arg
   local dir
+  arg="${1:=install}"
   for dir in "$BASE_DIR"/*; do
     [ -d "$dir" ] || continue;
     [ -f "$dir/setup.sh" ] || continue;
-    bash "$dir/setup.sh"
+    bash "$dir/setup.sh" "$arg"
   done
 }
 
@@ -76,9 +78,13 @@ main()
         main
         exit 0
         ;;
+      iu|install-update)
+        main update
+        exit 0
+        ;;
       u|update)
         update &&
-        bash "$BASE_DIR/setup.sh" install
+        bash "$BASE_DIR/setup.sh" install-update
         exit 0
         ;;
     esac

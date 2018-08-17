@@ -64,11 +64,6 @@ dotfiles_update()
   local witness
   local rc_clone
   witness="$HOME/.zshrc"
-  rc_clone="$(dirname "$(readlink -e "$witness")")"
-  {
-    cd "$rc_clone" &&
-    git fetch &&
-    git reset --hard origin/master
-  }
-  env zsh -l
+  rc_clone="$(dirname "$(dirname "$(readlink -e "$witness")")")"
+  bash "$rc_clone/setup.sh" update
 }
