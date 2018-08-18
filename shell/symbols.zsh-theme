@@ -1,6 +1,8 @@
 _USER_CHAR="${_USER_CHAR:-λ}"
 _INSERT_CHAR="${_INSERT_CHAR:-›}"
 
+autoload -U colors && colors
+setopt promptsubst
 
 if [[ -n $SSH_CONNECTION ]]; then
   _USER_CHAR="$USER@$HOST"

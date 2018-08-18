@@ -51,7 +51,7 @@ update()
   git reset --hard origin/master
 }
 
-main()
+install()
 {
   local arg
   local dir
@@ -75,11 +75,12 @@ main()
         exit 0
         ;;
       i|install)
-        main
+        install
         exit 0
         ;;
+      # internal option should not be used directly
       iu|install-update)
-        main update
+        install update
         exit 0
         ;;
       u|update)
