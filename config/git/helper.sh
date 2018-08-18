@@ -1,4 +1,9 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+# Control character, this is not a space, it's an EM SPACE
+# U+2003
+CCHAR=' '
+CDATE='}'
 
 # Log output:
 #
@@ -18,12 +23,12 @@
 # break this.
 
 LOG_HASH="%C(always,red)%h%C(always,reset)"
-LOG_RELATIVE_TIME="%C(always,green)%ar%C(always,reset)"
+LOG_RELATIVE_TIME="%C(always,green)%ar)%C(always,reset)"
 LOG_AUTHOR="%C(always,blue)%an%C(always,reset)"
 LOG_SUBJECT="%s"
 LOG_REFS="%C(always,yellow)%d%C(always,reset)"
 
-LOG_FORMAT="$LOG_HASH}$LOG_RELATIVE_TIME}$LOG_AUTHOR}$LOG_REFS $LOG_SUBJECT"
+LOG_FORMAT="$LOG_HASH$CCHAR$LOG_RELATIVE_TIME$CCHAR$LOG_AUTHOR$CCHAR$LOG_SUBJECT$LOG_REFS"
 
 BRANCH_PREFIX="%(HEAD)"
 BRANCH_REF="%(color:red)%(color:bold)%(refname:short)%(color:reset)"
@@ -32,42 +37,41 @@ BRANCH_DATE="%(color:green)(%(committerdate:relative))%(color:reset)"
 BRANCH_AUTHOR="%(color:blue)%(color:bold)<%(authorname)>%(color:reset)"
 BRANCH_CONTENTS="%(contents:subject)"
 
-BRANCH_FORMAT="$BRANCH_PREFIX}$BRANCH_REF}$BRANCH_HASH}$BRANCH_DATE}$BRANCH_AUTHOR}$BRANCH_CONTENTS"
+BRANCH_FORMAT="$BRANCH_PREFIX$CCHAR$BRANCH_REF$CCHAR$BRANCH_HASH$CCHAR$BRANCH_DATE$CCHAR$BRANCH_AUTHOR$CCHAR$BRANCH_CONTENTS"
 
 show_git_head() {
-  pretty_git_log -1
-  git show -p --pretty="tformat:"
+    pretty_git_log -1
+    git show -p --pretty="tformat:"
 }
 
 pretty_git_log() {
-  git log --graph --pretty="tformat:${LOG_FORMAT}" $* | pretty_git_format | git_page_maybe
+    git log --graph --pretty="tformat:${LOG_FORMAT}" $* | pretty_git_format | git_page_maybe
 }
 
 pretty_git_branch() {
-  git branch -v --color=always --format=${BRANCH_FORMAT} $* | pretty_git_format
+    git branch -v --color=always --format=${BRANCH_FORMAT} $* | pretty_git_format
 }
 
 pretty_git_branch_sorted() {
-  git branch -v --format=${BRANCH_FORMAT} --sort=-committerdate $* | pretty_git_format
+    git branch -v --format=${BRANCH_FORMAT} --sort=-committerdate $* | pretty_git_format
 }
 
 pretty_git_format() {
-  # Replace (2 years ago) with (2 years)
-  sed -Ee 's/(^[^<]*) ago\)/\1)/' |
-  # Replace (2 years, 5 months) with (2 years)
-  sed -Ee 's/(^[^<]*), [[:digit:]]+ .*months?\)/\1)/' |
-  # Always remove the ' ago' word
-  sed -Ee 's/ ago//g' |
-  # Line columns up based on } delimiter
-  column -s '}' -t
+    # Replace (2 years ago) with (2 years)
+    sed -Ee "s/(^[^<]*) ago\\)/\\1}/" |
+    # Replace (2 years, 5 months) with (2 years)
+    sed -Ee "s/(^[^<]*), [[:digit:]]+ .*months?\\}/\\1/" |
+    sed 's/}//' |
+    # Line columns up based on } delimiter
+    column -s "$CCHAR" -t
 }
 
 git_page_maybe() {
-  # Page only if we're asked to.
-  if [ -n "$GIT_NO_PAGER" ]; then
-    cat
-  else
-    # Page only if needed.
-    less --quit-if-one-screen --no-init --RAW-CONTROL-CHARS --chop-long-lines
-  fi
+    # Page only if we're asked to.
+    if [ -n "$GIT_NO_PAGER" ]; then
+        cat
+    else
+        # Page only if needed.
+        less --quit-if-one-screen --no-init --RAW-CONTROL-CHARS --chop-long-lines
+    fi
 }
