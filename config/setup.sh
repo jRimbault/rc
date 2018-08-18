@@ -13,13 +13,19 @@ git_config()
   soft_force_symlink "$DIR/git/helper.sh" "$HOME/.config/git/helper.sh"
 }
 
+vim_config()
+{
+  mkdir -p "$HOME/.vim"
+  soft_force_symlink "$DIR/vim/rc" "$HOME/.vim/vimrc"
+}
+
 setup_home()
 {
   echo "Setting up the home directory"
   mkdir -p "$HOME/.local/bin"
   mkdir -p "$HOME/.npm"
-  soft_force_symlink "$DIR/vim" "$HOME/.vimrc"
   git_config
+  vim_config
   echo "Done setting up the home directory"
 }
 

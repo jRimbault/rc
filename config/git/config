@@ -2,7 +2,7 @@
 	email = jacques.rimbault@gmail.com
 	name = jRimbault
 [core]
-	excludesfile = ~/.gitignore
+	excludesfile = ~/.config/git/ignore
 [alias]
 	# depends on the 'legit' package
 	switch = !legit switch
