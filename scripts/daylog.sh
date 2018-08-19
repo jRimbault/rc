@@ -19,8 +19,8 @@ usage()
 
 main()
 {
-  [ -d "$JOURNAL" ] || mkdir -p "$JOURNAL"
   local month="$(date +%Y-%m)"
+  [ -d "$JOURNAL/$month" ] || mkdir -p "$JOURNAL/$month"
   local day="$(date +%d)"
   $EDITOR "$JOURNAL/$month/$day".md
 }
