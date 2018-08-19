@@ -32,7 +32,6 @@ main()
   has "git" || exit 1
   git_clone
   install_all
-  env zsh -l
 }
 
 main

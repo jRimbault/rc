@@ -7,15 +7,6 @@ source "$(dirname "$DIR")/shell/function"
 readonly N_PREFIX="$HOME/.local/n"
 
 
-has()
-{
-  command -v "$1" > /dev/null 2>&1 || {
-    echo "Error: $1 is not installed"
-    return 1
-  }
-  return 0
-}
-
 get_packages()
 {
   cat "$DIR/$1"
@@ -55,7 +46,7 @@ node_managed_installer()
   set -e
   PATH="$PATH:$N_PREFIX/bin"
   export PATH
-  echo "Nodejs manager installer"
+  echo "Nodejs and n installed"
 }
 
 install_npm_packages()
@@ -73,7 +64,7 @@ install_pip_packages()
   local -a packages
   packages=($(get_packages pip))
   python3 -m pip install --upgrade pip
-  python3 -m pip install --user -qq "${packages[@]}"
+  python3 -m pip install --user -q "${packages[@]}"
   echo "Pip packages installed"
 }
 
@@ -96,16 +87,20 @@ system_packages()
 
 main()
 {
-  system_packages && \
-    install_pip_packages
-  node_managed_installer && \
-    install_npm_packages
+  ask "Install system packages ?" N &&
+  system_packages &&
+  ask "Install pip packages ?" N &&
+  install_pip_packages
+
+  ask "Install Nodejs ?" N &&
+  node_managed_installer &&
+  ask "Install npm packages ?" N &&
+  install_npm_packages
+
+  exit 0
 }
 
 # do not execute script if it is sourced or downloaded-piped to bash
 if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
-  if [[ "$1" = "update" ]]; then
-   exit 0
-  fi
   main "$@"
 fi
