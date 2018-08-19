@@ -13,6 +13,13 @@
 	branches = !legit branches
 
 	# logging
-	tree = "!. ~/.config/git/helper.sh && pretty_git_log"
+	l = "!. ~/.config/git/helper.sh && pretty_git_log"
 	# less pretty but for Windows
-	treew = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
+	lw = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
+
+	# list branches with their last commit, without paging
+	b = "!. ~/.config/git/helper.sh && pretty_git_branch"
+	# same, sorted
+	bs = "!. ~/.config/git/helper.sh && pretty_git_branch_sorted"
+	# Windows
+	bw = branch -v --color=always --sort=-committerdate
