@@ -58,6 +58,15 @@ soft_force_symlink()
   ln -sf "$1" "$2"
 }
 
+# add file to path
+add_to_path()
+{
+  local target dest
+  target="$1"
+  dest="$HOME/.local/bin/$(basename "$1")"
+  soft_force_symlink "$target" "$dest"
+}
+
 # update my dotfiles
 dotfiles_update()
 {
