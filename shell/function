@@ -31,10 +31,11 @@ man()
 # swap two files
 swap()
 {
-  local TMPFILE=$(mktemp)
-  mv "$1" "$TMPFILE"
-  mv "$2" "$1"
-  mv "$TMPFILE" "$2"
+  local tmp
+  tmp="$(mktemp)"
+  mv "$1" "$tmp" &&
+  mv "$2" "$1" &&
+  mv "$tmp" "$2"
 }
 
 # archiving to make funny named files
