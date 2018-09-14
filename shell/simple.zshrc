@@ -20,6 +20,7 @@ zstyle ':completion:*' menu select
 source "$HOME/.config/zsh/theme"
 source "$HOME/.config/zsh/alias"
 source "$HOME/.config/zsh/function"
+source "$HOME/.config/zsh/gh"
 
 # Environment variables :
 

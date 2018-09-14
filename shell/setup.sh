@@ -24,6 +24,7 @@ ohmyzsh_shell()
   soft_force_symlink "$DIR/ohmy.zshrc" "$HOME/.zshrc"
   soft_force_symlink "$DIR/alias" "$HOME/.oh-my-zsh/custom/alias.zsh"
   soft_force_symlink "$DIR/function" "$HOME/.oh-my-zsh/custom/function.zsh"
+  soft_force_symlink "$DIR/gh" "$HOME/.oh-my-zsh/custom/gh.zsh"
   soft_force_symlink "$DIR/symbols.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/symbols.zsh-theme"
   echo "Shell profile installed"
 }
@@ -35,6 +36,7 @@ purezsh_shell()
   soft_force_symlink "$DIR/simple.zshrc" "$HOME/.zshrc"
   soft_force_symlink "$DIR/alias" "$HOME/.config/zsh/alias"
   soft_force_symlink "$DIR/function" "$HOME/.config/zsh/function"
+  soft_force_symlink "$DIR/gh" "$HOME/.config/zsh/gh"
   soft_force_symlink "$DIR/symbols.zsh-theme" "$HOME/.config/zsh/theme"
   echo "Shell profile installed"
 }
