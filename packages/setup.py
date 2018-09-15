@@ -1,9 +1,5 @@
 #!/usr/bin/env python3
 
-# Todo :
-# I'd like to install scoop and/or chocolatey and then
-# some other software with through them.
-
 import os
 import platform
 import subprocess
@@ -81,8 +77,12 @@ def get_packages(file: str) -> List[str]:
 def run(command: str, args=[]) -> subprocess.CompletedProcess:
     cp = subprocess.run(command.split(' ')  + args)
     if cp.returncode != 0:
-        raise Exception("Error")
+        raise Exception('Error')
     return cp
+
+
+def powershell_run(command: str, args=[]) -> subprocess.CompletedProcess:
+    return run('C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe ' + command, args)
 
 
 def linux():
@@ -131,10 +131,21 @@ def npm_setup():
         install(get_packages('npm'))
 
 
+def windows():
+    def install_scoop():
+        powershell_run('Set-ExecutionPolicy RemoteSigned -scope CurrentUser')
+        powershell_run('iex (new-object net.webclient).downloadstring("https://get.scoop.sh")')
+
+    if ask("Install scoop ?", 'N'):
+        install_scoop()
+
+    powershell_run('scoop install', get_packages('scoop'))
+
+
 def system_setup():
     systems = {
         'Linux': linux,
-        'Windows': lambda: None,
+        'Windows': windows,
     }
     systems[platform.system()]()
 
