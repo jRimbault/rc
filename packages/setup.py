@@ -11,7 +11,7 @@ from typing import List
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 
-def ask(question: str, default: str=None) -> bool:
+def ask(question: str, default: str = None) -> bool:
     def prompt(default):
         prompts = {'Y': ('Y/n', 'Y'), 'N': ('y/N', 'N')}
         try:
@@ -59,7 +59,7 @@ def distro_id() -> str:
 
 
 def has(executable: str) -> bool:
-    for dir in os.environ['PATH'].split(':'):
+    for dir in os.environ['PATH'].split(path_sep):
         if os.path.isfile(os.path.join(dir, executable)):
             return True
     return False
@@ -71,14 +71,15 @@ def get_packages(file: str) -> List[str]:
 
 
 def run(command: str, args=[]) -> subprocess.CompletedProcess:
-    cp = subprocess.run(command.split(' ')  + args)
+    cp = subprocess.run(command.split(' ') + args)
     if cp.returncode != 0:
         raise Exception('Error')
     return cp
 
 
-def powershell_run(command: str, args=[]) -> subprocess.CompletedProcess:
-    return run('C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe ' + command, args)
+def ps1_run(command: str, args=[]) -> subprocess.CompletedProcess:
+    powershell = 'C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe'
+    return run(f'{powershell} {command}', args)
 
 
 def linux():
@@ -121,29 +122,34 @@ def pip_setup():
 
 def npm_setup():
     def install(packages: List[str]):
-        run('npm install -g', packages)
+        run(npm_exe + ' install -g', packages)
 
-    if has('npm') and ask("Install npm packages ?", 'N'):
+    if has(npm_exe) and ask("Install npm packages ?", 'N'):
         install(get_packages('npm'))
 
 
 def windows():
     def install_scoop():
-        powershell_run('Set-ExecutionPolicy RemoteSigned -scope CurrentUser')
-        powershell_run('iex (new-object net.webclient).downloadstring("https://get.scoop.sh")')
+        ps1_run('Set-ExecutionPolicy RemoteSigned -scope CurrentUser')
+        url = 'https://get.scoop.sh'
+        ps1_run(f"iex (new-object net.webclient).downloadstring('{url}')")
 
-    if ask("Install scoop ?", 'N'):
+    def install(packages: List[str]):
+        ps1_run('scoop install', packages)
+
+    if not has('scoop') and ask("Install scoop ?", 'N'):
         install_scoop()
 
-    powershell_run('scoop install', get_packages('scoop'))
+    if has('scoop') and ask("Install scoop packages ?", 'N'):
+        install(get_packages('scoop'))
 
 
-def system_setup():
-    systems = {
-        'Linux': linux,
-        'Windows': windows,
-    }
-    systems[platform.system()]()
+systems = {
+    'Linux': (linux, ':', 'npm'),
+    'Windows': (windows, ';', 'npm.cmd'),
+}
+
+system_setup, path_sep, npm_exe = systems[platform.system()]
 
 
 def main():
