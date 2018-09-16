@@ -58,10 +58,6 @@ def distro_id() -> str:
     return cfg[section]['ID'].strip('"')
 
 
-def distro_is(id: str) -> bool:
-    return id == distro_id()
-
-
 def has(executable: str) -> bool:
     for dir in os.environ['PATH'].split(':'):
         if os.path.isfile(os.path.join(dir, executable)):
@@ -105,13 +101,13 @@ def linux():
         )
 
     distro = {
-        distro_is('debian'): apt,
-        distro_is('ubuntu'): apt,
-        distro_is('arch'): pacman,
+        'ubuntu': apt,
+        'debian': apt,
+        'arch': pacman,
     }
 
     if has('sudo') and ask("Install system packages ?", 'N'):
-        distro[True]()
+        distro[distro_id()]()
 
 
 def pip_setup():
