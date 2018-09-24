@@ -73,12 +73,12 @@ def get_packages(file: str) -> List[str]:
 def run(command: str, args=[]) -> subprocess.CompletedProcess:
     cp = subprocess.run(command.split(' ') + args)
     if cp.returncode != 0:
-        raise Exception('Error')
+        raise Exception(f'Error running : {command}')
     return cp
 
 
 def ps1_run(command: str, args=[]) -> subprocess.CompletedProcess:
-    powershell = 'C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\powershell.exe'
+    powershell = r'C:\WINDOWS\system32\WindowsPowerShell\v1.0\powershell.exe'
     return run(f'{powershell} {command}', args)
 
 
