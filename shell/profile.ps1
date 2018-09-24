@@ -1,18 +1,4 @@
 
-$hosts = @(
-    'Visual Studio Code Host',
-    'ConsoleHost'
-)
-
-if ($hosts.Contains($host.Name)) {
-    Import-Module PSReadLine
-    Import-Module posh-git
-    Set-PSReadlineOption -BellStyle None
-    Set-PSReadlineOption -EditMode Emacs
-    $GitPromptSettings.DefaultPromptAbbreviateHomeDirectory = $true
-}
-
-
 function Set-SymbolicLink ($target, $link) {
     <#
     .SYNOPSIS
@@ -45,3 +31,24 @@ function Get-PromptPath {
 
     return $currentPath
 }
+
+function Set-MyPSReadLineOptions {
+    Set-PSReadlineOption -BellStyle None
+    Set-PSReadlineOption -EditMode Emacs
+    Set-PSReadlineKeyHandler -Chord UpArrow -Function HistorySearchBackward
+    Set-PSReadlineKeyHandler -Chord Ctrl+LeftArrow -Function ShellBackwardWord
+    Set-PSReadlineKeyHandler -Chord Ctrl+RightArrow -Function ShellForwardWord
+}
+
+$hosts = @(
+    'Visual Studio Code Host',
+    'ConsoleHost'
+)
+
+if ($hosts.Contains($host.Name)) {
+    Import-Module PSReadLine
+    Import-Module posh-git
+    Set-MyPSReadLineOptions
+    $GitPromptSettings.DefaultPromptAbbreviateHomeDirectory = $true
+}
+
