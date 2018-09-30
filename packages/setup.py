@@ -7,7 +7,6 @@ import configparser
 from pip._internal import main as pipmain
 from typing import List
 
-
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -42,47 +41,59 @@ def ask(question: str, default: str = None) -> bool:
     return keep_asking(f"{question} [{prompt}] ", default)
 
 
-def distro_id() -> str:
-    """
-    Only works for recent distros using systemd new scheme.
-    (debian, ubuntu, arch, fedora)
-    """
-    section = 's'
-
-    def fake_read(fp):
-        yield f'[{section}]\n'
-        yield from fp
-    cfg = configparser.ConfigParser()
-    with open('/etc/os-release') as fp:
-        cfg.read_file(fake_read(fp))
-    return cfg[section]['ID'].strip('"')
-
-
 def has(executable: str) -> bool:
-    for dir in os.environ['PATH'].split(path_sep):
-        if os.path.isfile(os.path.join(dir, executable)):
-            return True
-    return False
+    join = os.path.join
+    isfile = os.path.isfile
+    path = os.environ['PATH'].split(path_sep)
+    return any([isfile(join(dir, executable)) for dir in path])
 
 
 def get_packages(file: str) -> List[str]:
-    with open(os.path.join(DIR, file)) as packages:
-        return packages.read().splitlines()
+    try:
+        with open(os.path.join(DIR, file)) as packages:
+            return packages.read().splitlines()
+    except IOError:
+        return []
 
 
-def run(command: str, args=[]) -> subprocess.CompletedProcess:
+def run(command: str, args=None) -> subprocess.CompletedProcess:
+    if args is None:
+        args = []
     cp = subprocess.run(command.split(' ') + args)
     if cp.returncode != 0:
         raise Exception(f'Error running : {command}')
     return cp
 
 
-def ps1_run(command: str, args=[]) -> subprocess.CompletedProcess:
-    powershell = r'C:\WINDOWS\system32\WindowsPowerShell\v1.0\powershell.exe'
+def ps1_run(command: str, args=None) -> subprocess.CompletedProcess:
+    if args is None:
+        args = []
+    powershell = 'powershell'
     return run(f'{powershell} {command}', args)
 
 
 def linux():
+    def distro_id() -> str:
+        """
+        Only works for recent distros using systemd new scheme.
+        (debian, ubuntu, arch, fedora)
+        """
+
+        def os_release_file():
+            section = 'fake_section'
+
+            def fake_read(fp):
+                yield f'[{section}]\n'
+                yield from fp
+
+            cfg = configparser.ConfigParser()
+            with open('/etc/os-release') as fp:
+                cfg.read_file(fake_read(fp))
+
+            return cfg[section]
+
+        return os_release_file()['ID'].strip('"')
+
     def install(update: str, install: str, packages: List[str]):
         run(update)
         run(install, packages)
@@ -122,7 +133,7 @@ def pip_setup():
 
 def npm_setup():
     def install(packages: List[str]):
-        run(npm_exe + ' install -g', packages)
+        run(f'{npm_exe} install -g', packages)
 
     if has(npm_exe) and ask("Install npm packages ?", 'N'):
         install(get_packages('npm'))
@@ -132,7 +143,7 @@ def windows():
     def install_scoop():
         ps1_run('Set-ExecutionPolicy RemoteSigned -scope CurrentUser')
         url = 'https://get.scoop.sh'
-        ps1_run(f"iex (new-object net.webclient).downloadstring('{url}')")
+        ps1_run(f'iex (new-object net.webclient).downloadstring("{url}")')
 
     def install(packages: List[str]):
         ps1_run('scoop install', packages)

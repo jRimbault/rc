@@ -36,6 +36,7 @@ function Set-MyPSReadLineOptions {
     Set-PSReadlineOption -BellStyle None
     Set-PSReadlineOption -EditMode Emacs
     Set-PSReadlineKeyHandler -Chord UpArrow -Function HistorySearchBackward
+    Set-PSReadlineKeyHandler -Chord DownArrow -Function HistorySearchForward
     Set-PSReadlineKeyHandler -Chord Ctrl+LeftArrow -Function ShellBackwardWord
     Set-PSReadlineKeyHandler -Chord Ctrl+RightArrow -Function ShellForwardWord
 }
