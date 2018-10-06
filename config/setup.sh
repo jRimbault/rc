@@ -16,7 +16,7 @@ git_config()
 vim_config()
 {
   mkdir -p "$HOME/.vim"
-  soft_force_symlink "$DIR/vim/rc" "$HOME/.vim/vimrc"
+  soft_force_symlink "$DIR/vim/vimrc" "$HOME/.vim/vimrc"
 }
 
 setup_home()
