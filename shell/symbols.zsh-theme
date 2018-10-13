@@ -1,3 +1,5 @@
+#!/usr/bin/env zsh
+
 _USER_CHAR="${_USER_CHAR:-λ}"
 _INSERT_CHAR="${_INSERT_CHAR:-›}"
 

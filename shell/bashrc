@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC1090
+# shellcheck disable=SC2016
+
+# Stop if not interactive mode
+case $- in
+  *i*) ;;
+    *) return;;
+esac
+
+HISTSIZE=1000
+HISTFILESIZE=2000
+# Don't log duplicate
+HISTCONTROL=ignoreboth
+# Append to histfile, don't overwrite
+shopt -s histappend
+
+# Update LINES and COLUMNS after each command
+shopt -s checkwinsize
+
+# Load aliases and functions
+test -f ~/.config/bash/alias.sh && . ~/.config/bash/alias.sh
+test -f ~/.config/bash/function.sh && . ~/.config/bash/function.sh
+test -f ~/.config/bash/gh.sh && . ~/.config/bash/gh.sh
+test -f ~/.config/bash/theme.sh && . ~/.config/bash/theme.sh
+test -f ~/.env && . ~/.env
+
+# Enable variables in prompt
+shopt -s promptvars

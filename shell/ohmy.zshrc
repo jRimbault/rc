@@ -1,10 +1,12 @@
+#!/usr/bin/env zsh
+
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="symbols"
 
 plugins=()
 
-source $ZSH/oh-my-zsh.sh
+source "$ZSH/oh-my-zsh.sh"
 
 # Disable colors in tab completion
 zstyle ':completion:*' list-colors

@@ -17,10 +17,11 @@ zstyle ':completion:*' list-colors
 # Arrow driven autocompletion interface
 zstyle ':completion:*' menu select
 
-source "$HOME/.config/zsh/theme"
-source "$HOME/.config/zsh/alias"
-source "$HOME/.config/zsh/function"
-source "$HOME/.config/zsh/gh"
+test -f ~/.config/zsh/theme && . ~/.config/zsh/theme
+test -f ~/.config/zsh/alias && . ~/.config/zsh/alias
+test -f ~/.config/zsh/function && . ~/.config/zsh/function
+test -f ~/.config/zsh/gh && . ~/.config/zsh/gh
+test -f ~/.env && . ~/.env
 
 # Environment variables :
 
