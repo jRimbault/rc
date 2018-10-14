@@ -24,8 +24,33 @@ minimal_vcs() {
 }
 
 current_path() {
-  parent_and_current="%2~"
-  echo "%{${fg_bold[grey]}%}$parent_and_current%{$reset_color%}"
+  local segments="${1:-2}"
+  local seg_len="${2:-0}"
+
+  local _w="%{$reset_color%}"
+  local _g="%{${fg_bold[grey]}%}"
+
+  if [ "$segments" -le 0 ]; then
+      segments=1
+  fi
+  if [ "$seg_len" -gt 0 ] && [ "$seg_len" -lt 4 ]; then
+      seg_len=4
+  fi
+  local seg_hlen=$((seg_len / 2 - 1))
+
+  local cwd="%${segments}~"
+  cwd="${(%)cwd}"
+  cwd=("${(@s:/:)cwd}")
+
+  local pi=""
+  for i in {1..${#cwd}}; do
+    pi="$cwd[$i]"
+    if [ "$seg_len" -gt 0 ] && [ "${#pi}" -gt "$seg_len" ]; then
+      cwd[$i]="${pi:0:$seg_hlen}$_w..$_g${pi: -$seg_hlen}"
+    fi
+  done
+
+  echo -n "$_g${(j:/:)cwd//\//$_w/$_g}$_w"
 }
 
 status_prompt() {
