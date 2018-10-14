@@ -25,3 +25,5 @@ EDITOR="$(command -v vim)"
 export N_PREFIX
 export PATH
 export EDITOR
+
+test -f ~/.env && . ~/.env
