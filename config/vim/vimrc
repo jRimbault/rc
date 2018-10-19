@@ -72,3 +72,11 @@ function! RemoveFancyCharacters()
     :exe ":%s/".join(keys(typo), '\|').'/\=typo[submatch(0)]/ge'
 endfunction
 command! RemoveFancyCharacters :call RemoveFancyCharacters()
+
+" When pair programming
+" Insert a remark about that in the commit message
+" The list will only be composed of previous committer to the current repo
+function! CommitCoAuthoredBy()
+    read !echo "Co-authored-by: $(git authors | fzy)"
+endfunction
+command! CommitCoAuthoredBy :call CommitCoAuthoredBy()

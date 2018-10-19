@@ -23,3 +23,4 @@
 	bs = "!. ~/.config/git/helper.sh && pretty_git_branch_sorted"
 	# Windows
 	bw = branch -v --color=always --sort=-committerdate
+	authors = !git log --format='%an <%ae>' | sort -u
