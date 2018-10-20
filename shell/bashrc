@@ -23,7 +23,8 @@ test -f ~/.config/bash/alias.sh && . ~/.config/bash/alias.sh
 test -f ~/.config/bash/function.sh && . ~/.config/bash/function.sh
 test -f ~/.config/bash/gh.sh && . ~/.config/bash/gh.sh
 test -f ~/.config/bash/theme.sh && . ~/.config/bash/theme.sh
-test -f ~/.env && . ~/.env
 
 # Enable variables in prompt
 shopt -s promptvars
+
+test -f ~/.env && . ~/.env # if environment overwrite previous settings
