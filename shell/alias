@@ -44,3 +44,6 @@ alias pip='python3 -m pip' # debian has/had a packaging issue with pip
 # network
 alias wanip='dig +short myip.opendns.com @resolver1.opendns.com'
 alias mirror-website="wget --mirror --convert-links --adjust-extension --page-requisites --no-parent"
+
+# project management
+alias goto='goto_project'
