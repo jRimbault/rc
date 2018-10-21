@@ -50,12 +50,14 @@ archive()
 soft_force_symlink()
 {
   if [ ! -f "$2" ]; then
+    rm "$2"
     ln -s "$1" "$2"
     return $?
   fi
   if [ -n "$(diff --brief "$2" "$1")" ]; then
     archive "$2"
   fi
+  rm "$2"
   ln -sf "$1" "$2"
 }
 
