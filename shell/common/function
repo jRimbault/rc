@@ -49,8 +49,7 @@ archive()
 # archive the old file if exists
 soft_force_symlink()
 {
-  if [ ! -f "$2" ]; then
-    rm "$2"
+  if [ ! -e "$2" ]; then
     ln -s "$1" "$2"
     return $?
   fi
