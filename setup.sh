@@ -51,6 +51,15 @@ update()
   git reset --hard origin/master
 }
 
+set_example_env()
+{
+  cat >> "$HOME/.env" <<- EOM
+export GH_BASE_DIR="\$HOME/Documents/Github"
+export GH_PROTO="https"
+EOM
+}
+
+
 install()
 {
   local dir
@@ -59,6 +68,9 @@ install()
     [ -f "$dir/setup.sh" ] || continue;
     bash "$dir/setup.sh"
   done
+  if [ ! -f "$HOME/.env" ]; then
+    set_example_env
+  fi
 }
 
 main()
