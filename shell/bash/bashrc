@@ -24,6 +24,10 @@ test -f ~/.config/bash/function.sh && . ~/.config/bash/function.sh
 test -f ~/.config/bash/gh.sh && . ~/.config/bash/gh.sh
 test -f ~/.config/bash/theme.sh && . ~/.config/bash/theme.sh
 
+# Custom keybindings
+bind -x '"\C-n":"goto_project"'
+bind -x '"\C-k":"git_log_pager_short"'
+
 # Enable variables in prompt
 shopt -s promptvars
 

@@ -56,7 +56,9 @@ soft_force_symlink()
   if [ -n "$(diff --brief "$2" "$1")" ]; then
     archive "$2"
   fi
-  rm "$2"
+  if [ -e "$2" ]; then
+    rm "$2"
+  fi
   ln -sf "$1" "$2"
 }
 
