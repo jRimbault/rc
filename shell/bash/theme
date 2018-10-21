@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 
 # read-only globals
-readonly NOCOL="\\033[0m" # No color
-readonly BLACK="\\033[0;30m" # Black
-readonly WHITE="\\033[1;37m" # White
+readonly __NOCOL="\\033[0m" # No color
+readonly __BLACK="\\033[0;30m" # __Black
+readonly __WHITE="\\033[1;37m" # White
 
 # colored output
-__colored()     { echo -e "$*$NOCOL"; }
+__colored()     { echo -e "$*$__NOCOL"; }
 _grey()         { __colored "\\033[1;30m$*"; }
 _light_grey()   { __colored "\\033[0;37m$*"; }
 _red()          { __colored "\\033[0;31m$*"; }

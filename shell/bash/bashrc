@@ -18,11 +18,17 @@ shopt -s histappend
 # Update LINES and COLUMNS after each command
 shopt -s checkwinsize
 
+declare -ra libs=(
+  "alias.sh"
+  "function.sh"
+  "gh.sh"
+  "theme.sh"
+)
+
 # Load aliases and functions
-test -f ~/.config/bash/alias.sh && . ~/.config/bash/alias.sh
-test -f ~/.config/bash/function.sh && . ~/.config/bash/function.sh
-test -f ~/.config/bash/gh.sh && . ~/.config/bash/gh.sh
-test -f ~/.config/bash/theme.sh && . ~/.config/bash/theme.sh
+for lib in "${libs[@]}"; do
+  source "$HOME/.config/bash/$lib"
+done
 
 # Custom keybindings
 bind -x '"\C-n":"goto_project"'

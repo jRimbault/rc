@@ -3,7 +3,7 @@
 set -euo pipefail
 IFS=$'\n'
 readonly DIR="$(dirname "$(readlink -e "$0")")"
-source "$(dirname "$DIR")/shell/common/function"
+source "$(dirname "$DIR")/shell/common/function.sh"
 readonly N_PREFIX="$HOME/.local/n"
 
 

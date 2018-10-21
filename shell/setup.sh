@@ -2,7 +2,7 @@
 
 set -euo pipefail
 readonly DIR="$(dirname "$(readlink -e "$0")")"
-source "$(dirname "$DIR")/shell/common/function"
+source "$(dirname "$DIR")/shell/common/function.sh"
 
 
 install_ohmyzsh()
@@ -22,9 +22,9 @@ ohmyzsh_shell()
   echo "Copying over Zed shell profile, aliases, and function"
   mkdir -p "$HOME/.oh-my-zsh/custom/themes"
   soft_force_symlink "$DIR/zsh/ohmy.zshrc" "$HOME/.zshrc"
-  soft_force_symlink "$DIR/common/alias" "$HOME/.oh-my-zsh/custom/alias.zsh"
-  soft_force_symlink "$DIR/common/function" "$HOME/.oh-my-zsh/custom/function.zsh"
-  soft_force_symlink "$DIR/common/gh" "$HOME/.oh-my-zsh/custom/gh.zsh"
+  soft_force_symlink "$DIR/common/alias.sh" "$HOME/.oh-my-zsh/custom/alias.zsh"
+  soft_force_symlink "$DIR/common/function.sh" "$HOME/.oh-my-zsh/custom/function.zsh"
+  soft_force_symlink "$DIR/common/gh.sh" "$HOME/.oh-my-zsh/custom/gh.zsh"
   soft_force_symlink "$DIR/zsh/keybings.zsh" "$HOME/.oh-my-zsh/custom/keybings.zsh"
   soft_force_symlink "$DIR/zsh/symbols.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/symbols.zsh-theme"
   echo "Zed shell profile installed"
@@ -35,9 +35,9 @@ purezsh_shell()
   echo "Copying over Zed shell profile, aliases, and function"
   mkdir -p "$HOME/.config/zsh"
   soft_force_symlink "$DIR/zsh/simple.zshrc" "$HOME/.zshrc"
-  soft_force_symlink "$DIR/common/alias" "$HOME/.config/zsh/alias"
-  soft_force_symlink "$DIR/common/function" "$HOME/.config/zsh/function"
-  soft_force_symlink "$DIR/common/gh" "$HOME/.config/zsh/gh"
+  soft_force_symlink "$DIR/common/alias.sh" "$HOME/.config/zsh/alias"
+  soft_force_symlink "$DIR/common/function.sh" "$HOME/.config/zsh/function"
+  soft_force_symlink "$DIR/common/gh.sh" "$HOME/.config/zsh/gh"
   soft_force_symlink "$DIR/zsh/keybings.zsh" "$HOME/.config/zsh/keybings"
   soft_force_symlink "$DIR/zsh/symbols.zsh-theme" "$HOME/.config/zsh/theme"
   echo "Zed shell profile installed"
@@ -49,9 +49,9 @@ bash_shell()
   mkdir -p "$HOME/.config/bash"
   soft_force_symlink "$DIR/bash/bashrc" "$HOME/.bashrc"
   soft_force_symlink "$DIR/bash/inputrc" "$HOME/.inputrc"
-  soft_force_symlink "$DIR/common/alias" "$HOME/.config/bash/alias.sh"
-  soft_force_symlink "$DIR/common/function" "$HOME/.config/bash/function.sh"
-  soft_force_symlink "$DIR/common/gh" "$HOME/.config/bash/gh.sh"
+  soft_force_symlink "$DIR/common/alias.sh" "$HOME/.config/bash/alias.sh"
+  soft_force_symlink "$DIR/common/function.sh" "$HOME/.config/bash/function.sh"
+  soft_force_symlink "$DIR/common/gh.sh" "$HOME/.config/bash/gh.sh"
   soft_force_symlink "$DIR/bash/theme" "$HOME/.config/bash/theme.sh"
   echo "Bourne Again shell profile installed"
 }

@@ -2,7 +2,7 @@
 
 set -euo pipefail
 readonly DIR="$(dirname "$(readlink -e "$0")")"
-source "$(dirname "$DIR")/shell/common/function"
+source "$(dirname "$DIR")/shell/common/function.sh"
 
 
 git_config()
