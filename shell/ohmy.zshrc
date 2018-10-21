@@ -20,15 +20,6 @@ PATH+=":$HOME/.cargo/bin"
 
 EDITOR="$(command -v vim)"
 
-# project navigation
-_zsh_goto_project()
-{
-    goto_project
-    zle reset-prompt
-}
-zle -N _zsh_goto_project
-bindkey ^n _zsh_goto_project
-
 export N_PREFIX
 export PATH
 export EDITOR

@@ -160,3 +160,11 @@ goto_project()
   dest=$(find_git_repos "$base_dir" | fzy)
   cd "$base_dir/$dest" || return 1
 }
+
+# show the last 10 commits
+git_log_pager_short()
+{
+  local format
+  format='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
+  git log -10 --graph --pretty="$format" $* 2> /dev/null
+}
