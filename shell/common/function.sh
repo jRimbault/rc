@@ -50,6 +50,9 @@ archive()
 soft_force_symlink()
 {
   if [ ! -e "$2" ]; then
+    if [ ! -f "$2" ]; then
+      rm "$2"
+    fi
     ln -s "$1" "$2"
     return $?
   fi
@@ -161,6 +164,7 @@ goto_project()
   GH_BASE_DIR=${GH_BASE_DIR:-"$HOME/Documents"}
   base_dir="$(dirname "$GH_BASE_DIR")"
   dest=$(find_git_repos "$base_dir" | fzy)
+  [ -z "$dest" ] && return 0
   cd "$base_dir/$dest" || return 1
 }
 
