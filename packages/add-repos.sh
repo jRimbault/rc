@@ -5,7 +5,7 @@
 
 set -euo pipefail
 readonly DIR="$(dirname "$(readlink -e "$0")")"
-source "$(dirname "$DIR")/shell/function"
+source "$(dirname "$DIR")/shell/common/function.sh"
 
 
 declare -gra UBUNTU_PPAS=(

@@ -47,3 +47,6 @@ alias mirror-website="wget --mirror --convert-links --adjust-extension --page-re
 
 # project management
 alias goto='goto_project'
+
+# media
+alias playlist-dl='youtube-dl --extract-audio --ignore-errors --audio-format mp3 -o "%(autonumber)s - %(title)s.%(ext)s"'
