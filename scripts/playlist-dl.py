@@ -4,6 +4,7 @@ import os
 import sys
 import youtube_dl
 from typing import List
+import argparse
 
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -49,13 +50,10 @@ def main(file_videos):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print("File required", file=sys.stderr)
-        exit(1)
-    if not os.path.isfile(sys.argv[1]):
-        print("Valid file required", file=sys.stderr)
-        exit(1)
-    try:
-        main(os.path.realpath(sys.argv[1]))
-    except KeyboardInterrupt:
-        print("\nUser interupt", file=sys.stderr)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        'playlist',
+        help='File containing one video title or url per line'
+    )
+    args = parser.parse_args()
+    main(args.playlist)
