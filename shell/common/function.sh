@@ -50,7 +50,7 @@ archive()
 soft_force_symlink()
 {
   if [ ! -e "$2" ]; then
-    if [ ! -f "$2" ]; then
+    if [ -f "$2" ]; then
       rm "$2"
     fi
     ln -s "$1" "$2"
