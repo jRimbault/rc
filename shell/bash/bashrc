@@ -34,6 +34,7 @@ done
 # Custom keybindings
 bind -x '"\C-n":"goto_project"'
 bind -x '"\C-k":"git_log_pager_short"'
+bind -x '"\C-b":"history_fuzzy_finder"'
 
 # Enable variables in prompt
 shopt -s promptvars

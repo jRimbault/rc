@@ -19,17 +19,18 @@ def raw_video_list(filename: str) -> List[str]:
 
 
 def videos_list(filename: str) -> List[str]:
-    videos = raw_video_list(filename)
-    if len(videos) == 0:
-        print(f'Empty file : {filename}', file=sys.stderr)
-        exit(1)
-    return [f'ytsearch:{video}' if 'http' not in video else video for video in videos]
+    return [
+        f'ytsearch:{video}' if 'http' not in video else video
+        for video in raw_video_list(filename)
+    ]
 
 
-def download_videos(dest: str, videos: List[str]) -> str:
+def download_videos(dest: str, videos: List[str], extract_audio: bool) -> str:
     options = {
         'ignoreerrors': True,
-        'outtmpl': os.path.join(dest, '%(autonumber)s - %(title)s.%(ext)s'),
+        'extractaudio': extract_audio,
+        'audioformat': 'best',
+        'outtmpl': f'{dest}/%(autonumber)s - %(title)s.%(ext)s',
     }
     with youtube_dl.YoutubeDL(options) as ydl:
         ydl.download(videos)
@@ -38,14 +39,17 @@ def download_videos(dest: str, videos: List[str]) -> str:
 
 
 def write_playlist(dest: str):
+    list_of_songs = os.listdir(dest)
     with open(os.path.join(dest, 'playlist.m3u8'), 'w') as fd:
-        fd.write('\n'.join(os.listdir(dest)[:-1]))
+        fd.write('\n'.join(list_of_songs))
 
 
-def main(file_videos):
+def main(args):
+    playlist = os.path.abspath(args.playlist)
     write_playlist(download_videos(
-        os.path.join(os.path.dirname(file_videos), file_videos + '-dl'),
-        videos_list(file_videos)
+        os.path.join(os.path.dirname(playlist), playlist + '-dl'),
+        videos_list(playlist),
+        args.extract_audio
     ))
 
 
@@ -55,5 +59,10 @@ if __name__ == '__main__':
         'playlist',
         help='File containing one video title or url per line'
     )
-    args = parser.parse_args()
-    main(args.playlist)
+    parser.add_argument(
+        '-x',
+        '--extract-audio',
+        action='store_true',
+        help='Only keep audio'
+    )
+    main(parser.parse_args())

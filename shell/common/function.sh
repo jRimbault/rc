@@ -175,3 +175,11 @@ git_log_pager_short()
   format='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
   git log -10 --graph --pretty="$format" $* 2> /dev/null
 }
+
+# fuzzy find among the 500 lasts commands issued
+history_fuzzy_finder()
+{
+  local exe
+  exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzf)"
+  $exe
+}
