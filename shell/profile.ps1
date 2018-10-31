@@ -32,6 +32,11 @@ function Get-PromptPath {
     return $currentPath
 }
 
+function mpv-yta ($search) {
+    mpv --ytdl-format=bestaudio ytdl://ytsearch:"$search"
+}
+
+
 function Set-MyPSReadLineOptions {
     Set-PSReadlineOption -BellStyle None
     Set-PSReadlineOption -EditMode Emacs

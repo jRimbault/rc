@@ -183,3 +183,9 @@ history_fuzzy_finder()
   exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzf)"
   $exe
 }
+
+# using function to "stringify" all function's args
+# making actual args non mutable
+mpv_yta() {
+  mpv --ytdl-format=bestaudio ytdl://ytsearch:"$*"
+}
