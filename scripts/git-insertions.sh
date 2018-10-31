@@ -4,13 +4,13 @@
 #/ Date:   2017-06-08
 #/
 #/ Description:
-#/   How much has a collaborator participated to a git project
+#/   How much has a author participated to a git project
 #/   Show the total insertions, total insertions and total files changed
-#/   by a collaborator on a branch
+#/   by a author on a branch
 #/
-#/ Usage: git-insertions.sh <collaborator> <branch>
-#/   <collaborator> required
-#/   <branch>       default to "master"
+#/ Usage: git-insertions.sh <author> <branch>
+#/   <author> required
+#/   <branch> default to "master"
 #/
 #/ Options:
 #/   --help, -h display this help
@@ -57,7 +57,7 @@ if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
   [[ "$*" =~ .*--help ]] > /dev/null ||
   [[ "$*" =~ .*-h ]] > /dev/null && usage
   if [[ $# -lt 1 ]]; then
-    echo "<collaborator> required"
+    echo "<author> required"
     usage
   fi
   main "$@"

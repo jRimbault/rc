@@ -24,3 +24,6 @@
 	# Windows
 	bw = branch -v --color=always --sort=-committerdate
 	authors = !git log --format='%an <%ae>' | sort -u
+
+	# get stats for author
+	insert = "!git-insertions.sh"
