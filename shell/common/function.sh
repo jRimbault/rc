@@ -180,7 +180,7 @@ git_log_pager_short()
 history_fuzzy_finder()
 {
   local exe
-  exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzf)"
+  exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzy)"
   $exe
 }
 
