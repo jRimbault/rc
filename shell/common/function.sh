@@ -108,6 +108,7 @@ ask() {
     echo -n "$1 [$prompt] "
 
     # Read the answer (use /dev/tty in case stdin is redirected from somewhere else)
+    # shellcheck disable=SC2162
     read reply </dev/tty
 
     # Default?
@@ -173,6 +174,7 @@ git_log_pager_short()
 {
   local format
   format='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
+  # shellcheck disable=2048 disable=2086
   git log -10 --graph --pretty="$format" $* 2> /dev/null
 }
 
