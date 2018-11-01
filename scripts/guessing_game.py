@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 from typing import List
+import argparse
 import requests
 
 
-subreddit = {
+subreddits = {
     '1': 'nottheonion',
     '2': 'TheOnion',
 }
@@ -19,47 +20,47 @@ class Post:
         return self.data['data']['subreddit']
 
 
-def question(subreddit: dict) -> str:
+def question(subreddits: dict) -> str:
     q = ['From which subreddit did this come from ?']
-    for key, sub in subreddit.items():
+    for key, sub in subreddits.items():
         if sub == None:
-            q.append('  q - Quit')
             continue
         q.append(f'  {key} - r/{sub}')
+    q.append('  q - Quit')
     q.append('')
     return '\n'.join(q)
 
 
-def get_posts(subreddit: dict) -> List[Post]:
+def get_posts(subreddits: dict) -> List[Post]:
     def get_data(url: str) -> dict:
         r = requests.get(url)
         return r.json()
-    filtered_subreddit = [v for v in subreddit.values() if v is not None]
-    reddits = '+'.join(filtered_subreddit)
+    filtered_subreddits = [v for v in subreddits.values() if v is not None]
+    reddits = '+'.join(filtered_subreddits)
     json = get_data(f'https://api.reddit.com/r/{reddits}/')
     try:
         return map(Post, json['data']['children'])
     except KeyError:
-        print(json['message'])
+        print(json['message'], json['error'])
         exit(1)
 
 
-def main(subreddit: dict):
+def main(subreddits: dict):
     def ask(question: str) -> str:
         reply = input(question)
-        while reply not in subreddit:
+        while reply not in subreddits:
             reply = input()
         return reply
 
     total = 0
     score = 0
-    subreddit['q'] = None
-    for post in get_posts(subreddit):
+    subreddits['q'] = None
+    for post in get_posts(subreddits):
         print(f'>> "{post.title()}"')
-        reply = ask(question(subreddit))
+        reply = ask(question(subreddits))
         if reply == 'q':
             break
-        if subreddit[reply] == post.subreddit():
+        if subreddits[reply] == post.subreddit():
             print('Correct')
             score += 1
         else:
@@ -71,4 +72,19 @@ def main(subreddit: dict):
 
 
 if __name__ == '__main__':
-    main(subreddit)
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '-sr',
+        '--subreddits',
+        dest='subreddits',
+        nargs='+',
+        help=(
+            'The defaults are r/TheOnion and r/nottheonion. '
+            'You can change those by passing a list.'
+        )
+    )
+    args = parser.parse_args()
+    if args.subreddits:
+        sr = args.subreddits
+        subreddits = {str(i+1): s for i, s in enumerate(sr)}
+    main(subreddits)
