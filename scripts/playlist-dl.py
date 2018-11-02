@@ -45,10 +45,9 @@ def write_playlist(dest: str):
 
 
 def main(args):
-    playlist = os.path.abspath(args.playlist)
     write_playlist(download_videos(
-        os.path.join(os.path.dirname(playlist), playlist + '-dl'),
-        videos_list(playlist),
+        os.path.join(os.path.dirname(args.playlist), args.playlist + '-dl'),
+        videos_list(args.playlist),
         args.extract_audio
     ))
 
@@ -57,6 +56,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument(
         'playlist',
+        type=os.path.abspath,
         help='File containing one video title or url per line'
     )
     parser.add_argument(
