@@ -40,6 +40,8 @@ alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
 
 # python
 alias pip='python3 -m pip' # debian has/had a packaging issue with pip
+alias pr='pipenv run'
+alias prp='pipenv run python'
 
 # network
 alias wanip='dig +short myip.opendns.com @resolver1.opendns.com'
