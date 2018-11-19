@@ -2,7 +2,8 @@
 
 from typing import List
 import argparse
-import requests
+import urllib.request
+import json
 
 
 subreddits = {
@@ -22,39 +23,35 @@ class Post:
 
 def question(subreddits: dict) -> str:
     q = ['From which subreddit did this come from ?']
-    for key, sub in subreddits.items():
-        if sub == None:
-            continue
-        q.append(f'  {key} - r/{sub}')
-    q.append('  q - Quit')
-    q.append('')
+    q.extend([f'  {key} - r/{sub}' for key, sub in subreddits.items()])
+    q.extend(['  q - Quit', ''])
     return '\n'.join(q)
 
 
 def get_posts(subreddits: dict) -> List[Post]:
     def get_data(url: str) -> dict:
-        r = requests.get(url)
-        return r.json()
+        r = urllib.request.urlopen(url, timeout=10)
+        return json.loads(r.read())
     filtered_subreddits = [v for v in subreddits.values() if v is not None]
     reddits = '+'.join(filtered_subreddits)
-    json = get_data(f'https://api.reddit.com/r/{reddits}/')
+    data = get_data(f'https://api.reddit.com/r/{reddits}/')
     try:
-        return map(Post, json['data']['children'])
+        return map(Post, data['data']['children'])
     except KeyError:
-        print(json['message'], json['error'])
+        print(data['message'], data['error'])
         exit(1)
 
 
-def main(subreddits: dict):
-    def ask(question: str) -> str:
-        reply = input(question)
-        while reply not in subreddits:
-            reply = input()
-        return reply
+def ask(question: str) -> str:
+    reply = input(question)
+    while reply not in subreddits and reply != 'q':
+        reply = input()
+    return reply
 
+
+def game(subreddits: dict) -> (int, int):
     total = 0
     score = 0
-    subreddits['q'] = None
     for post in get_posts(subreddits):
         print(f'>> "{post.title()}"')
         reply = ask(question(subreddits))
@@ -66,9 +63,12 @@ def main(subreddits: dict):
         else:
             print('Incorrect')
         total += 1
+    return score, total
 
+
+def main(subreddits: dict):
+    score, total = game(subreddits)
     print(f'Final score : {score}/{total}')
-
 
 
 if __name__ == '__main__':
