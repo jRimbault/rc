@@ -164,7 +164,7 @@ goto_project()
   local dest base_dir
   GH_BASE_DIR=${GH_BASE_DIR:-"$HOME/Documents"}
   base_dir="$(dirname "$GH_BASE_DIR")"
-  dest=$(find_git_repos "$base_dir" | fzy)
+  dest=$(find_git_repos "$base_dir" | fzf)
   [ -z "$dest" ] && return 0
   cd "$base_dir/$dest" || return 1
 }
