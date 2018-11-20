@@ -3,6 +3,7 @@
 	name = jRimbault
 [core]
 	excludesfile = ~/.config/git/ignore
+	fileMode = true
 [alias]
 	# depends on the 'legit' package
 	switch = !legit switch
