@@ -191,3 +191,11 @@ history_fuzzy_finder()
 mpv_yta() {
   mpv --ytdl-format=bestaudio ytdl://ytsearch:"$*"
 }
+
+# run command on all git revisions since last push
+run_since_last_push()
+{
+  local branch
+  branch=$(git rev-parse --abbrev-ref HEAD)
+  run-command-on-git-revisions.sh origin/"$branch" "$branch" "$*"
+}
