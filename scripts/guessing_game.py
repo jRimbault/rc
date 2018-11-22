@@ -16,7 +16,7 @@ class Post:
     def __init__(self, data: dict):
         self.data = data
     def title(self) -> str:
-        return self.data['data']['title']
+        return self.data['data']['title'].title()
     def subreddit(self) -> str:
         return self.data['data']['subreddit']
 
