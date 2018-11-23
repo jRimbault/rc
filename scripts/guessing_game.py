@@ -15,8 +15,10 @@ subreddits = {
 class Post:
     def __init__(self, data: dict):
         self.data = data
+    @property
     def title(self) -> str:
         return self.data['data']['title'].title()
+    @property
     def subreddit(self) -> str:
         return self.data['data']['subreddit']
 
@@ -32,8 +34,7 @@ def get_posts(subreddits: dict) -> List[Post]:
     def get_data(url: str) -> dict:
         r = urllib.request.urlopen(url, timeout=10)
         return json.loads(r.read())
-    filtered_subreddits = [v for v in subreddits.values() if v is not None]
-    reddits = '+'.join(filtered_subreddits)
+    reddits = '+'.join(s for s in subreddits.values())
     data = get_data(f'https://api.reddit.com/r/{reddits}/')
     try:
         return map(Post, data['data']['children'])
@@ -53,11 +54,11 @@ def game(subreddits: dict) -> (int, int):
     total = 0
     score = 0
     for post in get_posts(subreddits):
-        print(f'>> "{post.title()}"')
+        print(f'>> "{post.title}"')
         reply = ask(question(subreddits))
         if reply == 'q':
             break
-        if subreddits[reply] == post.subreddit():
+        if subreddits[reply] == post.subreddit:
             print('Correct')
             score += 1
         else:

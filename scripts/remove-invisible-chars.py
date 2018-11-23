@@ -5,12 +5,17 @@ import sys
 
 def stripped(text):
     """Remove invisible characters
-    In fact remove all characters not between the ascii 32 and 127
+
+    Remove all characters not between the ascii 32 and 127
     and not an ascii 10 (line feed)
     """
-    whitelist = [10]
-    whitelist.extend(range(32, 127))
-    return ''.join(c for c in text if ord(c) in whitelist)
+    def whitelist(c: int) -> bool:
+        if 31 < c < 127:
+            return True
+        if c == 10:
+            return True
+        return False
+    return ''.join(c for c in text if whitelist(ord(c)))
 
 
 def main(file):
