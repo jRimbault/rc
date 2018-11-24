@@ -28,3 +28,5 @@
 
 	# get stats for author
 	insert = "!git-insertions.sh"
+	# run command on each git revisions
+	recurse = "!run-command-on-git-revisions.sh"
