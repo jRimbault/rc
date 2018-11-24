@@ -45,9 +45,15 @@ def get_words(added_lines, removed_lines):
 
 
 def display(diff_lines, added_lines, added_words, removed_lines, removed_words):
-    print(f'{diff_lines} lines of diff')
-    print(f'+{added_lines - removed_lines} lines (+{added_lines}, -{removed_lines})')
-    print(f'+{added_words - removed_words} words (+{added_words}, -{removed_words})')
+    def delta(added, removed):
+        d = added - removed
+        return ['', '+'][d > 0] + str(d)
+    delta_lines = delta(added_lines, removed_lines)
+    delta_words = delta(added_words, removed_words)
+
+    print(f'{diff_lines} lines of diff\n'
+          f'{delta_lines} lines (+{added_lines}, -{removed_lines})\n'
+          f'{delta_words} words (+{added_words}, -{removed_words})')
 
 
 def main(fileinput):
@@ -64,4 +70,7 @@ def main(fileinput):
 
 
 if __name__ == '__main__':
-    main(fileinput.input())
+    try:
+        main(fileinput.input())
+    except KeyboardInterrupt:
+        pass
