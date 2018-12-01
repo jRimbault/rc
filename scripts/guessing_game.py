@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import os
 from typing import List
 import argparse
 import urllib.request
@@ -11,6 +12,25 @@ subreddits = {
     '2': 'TheOnion',
 }
 
+NT = os.name == 'nt'
+
+
+class Color:
+    OKGREEN = '\033[92m'
+    FAIL = '\033[91m'
+    RESET = '\033[0m'
+    @staticmethod
+    def _reset(color, message):
+        if NT:
+            return message
+        return f'{color}{message}{Color.RESET}'
+    @staticmethod
+    def fail(message):
+        return Color._reset(Color.FAIL, message)
+    @staticmethod
+    def ok(message):
+        return Color._reset(Color.OKGREEN, message)
+
 
 class Post:
     def __init__(self, data: dict):
@@ -21,6 +41,9 @@ class Post:
     @property
     def subreddit(self) -> str:
         return self.data['data']['subreddit']
+    @property
+    def domain(self) -> str:
+        return self.data['data']['domain']
 
 
 def question(subreddits: dict) -> str:
@@ -59,10 +82,11 @@ def game(subreddits: dict) -> (int, int):
         if reply == 'q':
             break
         if subreddits[reply] == post.subreddit:
-            print('Correct')
+            print(Color.ok('✓ Correct'))
             score += 1
         else:
-            print('Incorrect')
+            print(Color.fail('✗ Incorrect'))
+        print(f'This was from {post.domain}')
         total += 1
     return score, total
 
@@ -88,4 +112,11 @@ if __name__ == '__main__':
     if args.subreddits:
         sr = args.subreddits
         subreddits = {str(i+1): s for i, s in enumerate(sr)}
-    main(subreddits)
+
+    try:
+        main(subreddits)
+    except KeyboardInterrupt:
+        print()
+    except Exception as e:
+        print(e)
+        exit(1)
