@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from typing import List
+from typing import Iterator
 import argparse
 import urllib.request
 import json
@@ -16,20 +16,22 @@ NT = os.name == 'nt'
 
 
 class Color:
-    OKGREEN = '\033[92m'
-    FAIL = '\033[91m'
+    GREEN = '\033[92m'
+    RED = '\033[91m'
     RESET = '\033[0m'
+    BOLD = '\033[1m'
     @staticmethod
     def _reset(color, message):
-        if NT:
-            return message
-        return f'{color}{message}{Color.RESET}'
+        return message if NT else f'{color}{message}{Color.RESET}'
+    @staticmethod
+    def bold(message):
+        return Color._reset(Color.BOLD, message)
     @staticmethod
     def fail(message):
-        return Color._reset(Color.FAIL, message)
+        return Color._reset(Color.RED, message)
     @staticmethod
     def ok(message):
-        return Color._reset(Color.OKGREEN, message)
+        return Color._reset(Color.GREEN, message)
 
 
 class Post:
@@ -53,17 +55,13 @@ def question(subreddits: dict) -> str:
     return '\n'.join(q)
 
 
-def get_posts(subreddits: dict) -> List[Post]:
+def get_posts(subreddits: dict) -> Iterator[Post]:
     def get_data(url: str) -> dict:
         r = urllib.request.urlopen(url, timeout=10)
         return json.loads(r.read())
     reddits = '+'.join(s for s in subreddits.values())
     data = get_data(f'https://api.reddit.com/r/{reddits}/')
-    try:
-        return map(Post, data['data']['children'])
-    except KeyError:
-        print(data['message'], data['error'])
-        exit(1)
+    return map(Post, data['data']['children'])
 
 
 def ask(question: str) -> str:
@@ -77,16 +75,16 @@ def game(subreddits: dict) -> (int, int):
     total = 0
     score = 0
     for post in get_posts(subreddits):
-        print(f'>> "{post.title}"')
+        print(f'>> "{Color.bold(post.title)}"')
         reply = ask(question(subreddits))
         if reply == 'q':
             break
         if subreddits[reply] == post.subreddit:
-            print(Color.ok('✓ Correct'))
+            print(f'{Color.ok("✓")} Correct', end=', ')
             score += 1
         else:
-            print(Color.fail('✗ Incorrect'))
-        print(f'This was from {post.domain}')
+            print(f'{Color.fail("✗")} Incorrect', end=', ')
+        print(f'this was from {post.domain}')
         total += 1
     return score, total
 
@@ -110,13 +108,12 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
     if args.subreddits:
-        sr = args.subreddits
-        subreddits = {str(i+1): s for i, s in enumerate(sr)}
+        subreddits = {str(i+1): s for i, s in enumerate(args.subreddits)}
 
     try:
         main(subreddits)
     except KeyboardInterrupt:
         print()
     except Exception as e:
-        print(e)
+        print(f'{type(e).__name__}: {e}')
         exit(1)
