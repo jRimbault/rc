@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# filesystem
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
+
+
 # system management
 alias service='sudo service'
 alias svim='sudoedit'

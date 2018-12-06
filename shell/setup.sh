@@ -56,19 +56,28 @@ bash_shell()
   echo "Bourne Again shell profile installed"
 }
 
+profile()
+{
+  soft_force_symlink "$DIR/common/profile" "$HOME/.config/bash/.profile"
+  soft_force_symlink "$DIR/common/profile" "$HOME/.config/bash/.zprofile"
+}
+
 main()
 {
   if ask "Install bash profile ?" Y; then
     bash_shell
+    profile
   fi
   has zsh || exit 0
   if ask "Install with oh-my-zsh ?" N; then
     install_ohmyzsh
     ohmyzsh_shell
+    profile
     exit 0
   fi
   if ask "Install with native zsh profile ?" N; then
     purezsh_shell
+    profile
     exit 0
   fi
 

@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+
+# Environment variables :
+N_PREFIX="$HOME/.local/n"
+
+PATH="$HOME/.cargo/bin:$PATH"
+PATH="$N_PREFIX/bin:$PATH"
+PATH="$HOME/.local/bin:$PATH"
+
+EDITOR="$(command -v vim)"
+
+export N_PREFIX
+export PATH
+export EDITOR
