@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+umask 022
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="symbols"

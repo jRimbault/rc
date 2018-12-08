@@ -16,7 +16,7 @@ _zsh_goto_project()
     zle reset-prompt
 }
 zle -N _zsh_goto_project
-bindkey ^n _zsh_goto_project
+bindkey ^s _zsh_goto_project
 
 
 # short git log
@@ -35,4 +35,4 @@ _history_fuzzy_finder()
     zle reset-prompt
 }
 zle -N _history_fuzzy_finder
-bindkey ^b _history_fuzzy_finder
+bindkey ^r _history_fuzzy_finder

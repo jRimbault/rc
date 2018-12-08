@@ -8,6 +8,8 @@ case $- in
     *) return;;
 esac
 
+umask 022
+
 HISTSIZE=1000
 HISTFILESIZE=2000
 # Don't log duplicate
@@ -32,9 +34,9 @@ for lib in "${libs[@]}"; do
 done
 
 # Custom keybindings
-bind -x '"\C-n":"goto_project"'
+bind -x '"\C-s":"goto_project"'
 bind -x '"\C-k":"git_log_pager_short"'
-bind -x '"\C-b":"history_fuzzy_finder"'
+bind -x '"\C-r":"history_fuzzy_finder"'
 
 # Enable variables in prompt
 shopt -s promptvars

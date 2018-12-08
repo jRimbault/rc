@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+umask 022
 autoload -Uz compinit promptinit
 compinit
 promptinit

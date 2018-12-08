@@ -164,7 +164,7 @@ goto_project()
   local dest base_dir
   GH_BASE_DIR=${GH_BASE_DIR:-"$HOME/Documents"}
   base_dir="$(dirname "$GH_BASE_DIR")"
-  dest=$(find_git_repos "$base_dir" | fzf)
+  dest=$(find_git_repos "$base_dir" | fzy)
   [ -z "$dest" ] && return 0
   cd "$base_dir/$dest" || return 1
 }
@@ -183,7 +183,8 @@ history_fuzzy_finder()
 {
   local exe
   exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzy)"
-  $exe
+  echo "$exe"
+  eval "$exe"
 }
 
 # using function to "stringify" all function's args
@@ -198,4 +199,15 @@ run_since_last_push()
   local branch
   branch=$(git rev-parse --abbrev-ref HEAD)
   run-command-on-git-revisions.sh origin/"$branch" "$branch" "$*"
+}
+
+gfb()
+{
+  git branch | cut -c 3- | fzy
+}
+
+# fuzzy git checkout
+fco()
+{
+  gfb | xargs git checkout
 }

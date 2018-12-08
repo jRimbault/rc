@@ -4,9 +4,19 @@
 # Environment variables :
 N_PREFIX="$HOME/.local/n"
 
-PATH="$HOME/.cargo/bin:$PATH"
-PATH="$N_PREFIX/bin:$PATH"
-PATH="$HOME/.local/bin:$PATH"
+
+if_path_exist_add_to_env:path()
+{
+  if [ -d "$1" ]; then
+    PATH="$1:$PATH"
+  fi
+}
+
+if_path_exist_add_to_env:path "$HOME/.cargo/bin"
+if_path_exist_add_to_env:path "$HOME/.gem/ruby/2.5.0/bin"
+if_path_exist_add_to_env:path "$N_PREFIX/bin"
+if_path_exist_add_to_env:path "$HOME/.local/bin"
+unset -f if_path_exist_add_to_env:path
 
 EDITOR="$(command -v vim)"
 
