@@ -198,7 +198,7 @@ run_since_last_push()
 {
   local branch
   branch=$(git rev-parse --abbrev-ref HEAD)
-  run-command-on-git-revisions.sh origin/"$branch" "$branch" "$*"
+  git recurse origin/"$branch" "$branch" "$*"
 }
 
 gfb()

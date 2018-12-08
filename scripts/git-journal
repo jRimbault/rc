@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# journaling
+
+
+base_dir="${GH_BASE_DIR:-$HOME/Documents}"
+journal="$base_dir/jRimbault/log"
+
+git --git-dir "$journal/.git" \
+  --work-tree "$journal" \
+  $*
