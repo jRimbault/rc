@@ -71,7 +71,7 @@ add_to_path()
   local target dest realfile
   realfile="$(basename "$1")"
   target="$(readlink -e "$(dirname "$1")")/$realfile"
-  dest="$HOME/.local/bin/$realfile"
+  dest="$HOME/.bin/$realfile"
   soft_force_symlink "$target" "$dest"
 }
 
