@@ -61,8 +61,3 @@ alias goto='goto_project'
 
 # media
 alias playlist-dl='youtube-dl --extract-audio --ignore-errors --audio-format mp3 -o "%(autonumber)s - %(title)s.%(ext)s"'
-
-# journaling
-alias journal_write='git journal commit --allow-empty'
-alias journal_save='git journal push'
-alias journal_read='git journal log --graph'
