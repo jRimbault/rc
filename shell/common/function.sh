@@ -200,14 +200,3 @@ run_since_last_push()
   branch=$(git rev-parse --abbrev-ref HEAD)
   git recurse origin/"$branch" "$branch" "$*"
 }
-
-gfb()
-{
-  git branch | cut -c 3- | fzy
-}
-
-# fuzzy git checkout
-fco()
-{
-  gfb | xargs git checkout
-}
