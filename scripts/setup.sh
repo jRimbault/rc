@@ -8,12 +8,12 @@ source "$(dirname "$DIR")/shell/common/function.sh"
 setup_scripts()
 {
   echo "Installing scripts"
-  mkdir -p "$HOME/.local/bin"
+  mkdir -p "$HOME/.bin"
   for script in "$DIR"/*; do
-    soft_force_symlink "$script" "$HOME/.local/bin/$(basename "$script")"
+    soft_force_symlink "$script" "$HOME/.bin/$(basename "$script")"
   done
-  rm "$HOME/.local/bin/$(basename "$0")"
-  chmod 744 "$HOME/.local/bin"/*
+  rm "$HOME/.bin/$(basename "$0")"
+  chmod 744 "$HOME/.bin"/*
   echo "Done installing scripts"
 }
 
