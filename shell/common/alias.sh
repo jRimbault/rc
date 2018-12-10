@@ -59,6 +59,9 @@ alias http-server='python3 -m http.server --bind 127.0.0.1 8080'
 # project management
 alias goto='goto_project'
 
+# text files
+alias sed-trailing-whitespace="sed 's/[[:space:]]\\+$//'"
+
 # media
 alias playlist-dl='youtube-dl --extract-audio --ignore-errors --audio-format mp3 -o "%(autonumber)s - %(title)s.%(ext)s"'
 

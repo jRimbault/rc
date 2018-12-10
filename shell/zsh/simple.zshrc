@@ -7,6 +7,7 @@ promptinit
 
 # Disable colors in tab completion
 zstyle ':completion:*' list-colors
+zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
 # Arrow driven autocompletion interface
 zstyle ':completion:*' menu select
 
