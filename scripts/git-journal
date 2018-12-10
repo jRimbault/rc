@@ -13,6 +13,19 @@ ALIAS = {
 }
 
 
+def main(argv):
+    if argv[1] in ALIAS:
+        return git_command(ALIAS[argv[1]] + argv[2:])
+    return git_command(argv[1:])
+
+
+def git_command(command: list):
+    workdir = os.environ['JOURNAL_REPO']
+    gitdir = os.path.join(workdir, '.git')
+    git = ['git',  '--git-dir', gitdir, '--work-tree', workdir]
+    return subprocess.call(git + command)
+
+
 def usage():
     text = [
         f'Usage: {os.path.basename(__file__)} <command>',
@@ -25,20 +38,6 @@ def usage():
         text.append(f'  {alias:<6}: {" ".join(command)}')
     print('\n'.join(text))
     return 0
-
-
-def git_command(command: list):
-    workdir = os.environ['JOURNAL_REPO']
-    gitdir = os.path.join(workdir, '.git')
-    git = ['git',  '--git-dir', gitdir, '--work-tree', workdir]
-    return subprocess.call(git + command)
-
-
-def main(argv):
-    args = argv[1:]
-    if argv[1] in ALIAS:
-        args = ALIAS[argv[1]] + argv[2:]
-    return git_command(args)
 
 
 if __name__ == "__main__":
