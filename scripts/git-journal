@@ -6,10 +6,14 @@ import subprocess
 
 
 ALIAS = {
-    'read': ['log'],
-    'pages': ['log', '--date=short', '--format=%C(red)%h%Creset %C(green)%ad%Creset %s'],
-    'write': ['commit', '--allow-empty'],
-    'save': ['push'],
+    "read": ["log"],
+    "pages": [
+        "log",
+        "--date=short",
+        "--format=%C(red)%h%Creset %C(green)%ad%Creset %s",
+    ],
+    "write": ["commit", "--allow-empty"],
+    "save": ["push"],
 }
 
 
@@ -20,28 +24,28 @@ def main(argv, aliases):
 
 
 def git_command(command: list):
-    workdir = os.environ['JOURNAL_REPO']
-    gitdir = os.path.join(workdir, '.git')
-    git = ['git',  '--git-dir', gitdir, '--work-tree', workdir]
+    workdir = os.environ["JOURNAL_REPO"]
+    gitdir = os.path.join(workdir, ".git")
+    git = ["git", "--git-dir", gitdir, "--work-tree", workdir]
     return subprocess.call(git + command)
 
 
 def usage(aliases):
     text = [
-        f'Usage: {os.path.basename(__file__)} <command>',
-        f'{os.path.basename(__file__)} is a script meant to interact with a'
-        ' git repository used as a journal.',
-        'Any git command is a valid subcommand.',
-        'Aliases added by this script:',
+        f"Usage: {os.path.basename(__file__)} <command>",
+        f"{os.path.basename(__file__)} is a script meant to interact with a"
+        " git repository used as a journal.",
+        "Any git command is a valid subcommand.",
+        "Aliases added by this script:",
     ]
     for alias, command in aliases.items():
-        text.append(f'  {alias:<6}: {" ".join(command)}')
-    print('\n'.join(text))
+        text.append(f"  {alias:<6}: {' '.join(command)}")
+    print("\n".join(text))
     return 0
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2 or sys.argv[1] == 'help':
+    if len(sys.argv) < 2 or sys.argv[1] == "help":
         sys.exit(usage(ALIAS))
     try:
         sys.exit(main(sys.argv, ALIAS))
