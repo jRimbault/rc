@@ -1,64 +1,38 @@
-#!/usr/bin/env bash
-#/ Script Name: git-insertions.sh
-#/ Author: jRimbault
-#/ Date:   2017-06-08
-#/
-#/ Description:
-#/   How much has a author participated to a git project
-#/   Show the total insertions, total insertions and total files changed
-#/   by a author on a branch
-#/
-#/ Usage: git-insertions.sh <author> <branch>
-#/   <author> required
-#/   <branch> default to "master"
-#/
-#/ Options:
-#/   --help, -h display this help
-usage()
-{
-  grep "^#/" "$0" | cut -c4-
-  exit 0
-}
+#!/usr/bin/env python3
 
-git_log()
-{
-  git log --author="$1" --shortstat "$2"
-}
+import sys
+import argparse
+import subprocess
 
-# each line beginning with a space and number
-# add all first string
-# add all fourth string
-# add all sixth string
-# ex: " 2 files changed, 35 insertions(+), 40 deletions(-)"
-awk_script()
-{
-  awk '/^ [0-9]/ {
-    files += $1
-    inserts += $4
-    delets += $6
-  } END {
-    printf("%d files changed, %d insertions(+), %d deletions(-)\n",
-            files, inserts, delets)
-  }'
-}
 
-main()
-{
-  local USER
-  local BRANCH
-  USER="$1"
-  BRANCH=${2:-"master"}
-  echo "$USER on $BRANCH"
-  git_log "$USER" "$BRANCH" | awk_script
-}
+def main(args):
+    files, insertions, deletions = parse(git_stats(args.author, args.branch))
+    out = [
+        f"{args.author} on {args.branch}",
+        f"{files} files changed, {insertions} insertions(+), {deletions} deletions(-)",
+    ]
+    print("\n".join(out))
+    return 0
 
-# executes only when executed directly not sourced
-if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
-  [[ "$*" =~ .*--help ]] > /dev/null ||
-  [[ "$*" =~ .*-h ]] > /dev/null && usage
-  if [[ $# -lt 1 ]]; then
-    echo "<author> required"
-    usage
-  fi
-  main "$@"
-fi
+
+def git_stats(author, branch="master"):
+    git = ["git", "log", f"--author={author}", "--shortstat", "--format=", branch]
+    return subprocess.check_output(git, universal_newlines=True)
+
+
+def parse(text):
+    value = lambda l, i: int(l[i]) if len(l) > i else 0
+    files, insertions, deletions = [], [], []
+    for line in text.split("\n"):
+        token = line.split()
+        files.append(value(token, 0))
+        insertions.append(value(token, 3))
+        deletions.append(value(token, 5))
+    return sum(files), sum(insertions), sum(deletions)
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("author")
+    parser.add_argument("branch", nargs="?", default="master")
+    sys.exit(main(parser.parse_args()))
