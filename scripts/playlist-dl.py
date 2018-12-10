@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import sys
-import youtube_dl
 from typing import List
-import argparse
+
+import youtube_dl
 
 
 DIR = os.path.dirname(os.path.abspath(__file__))
@@ -20,17 +21,17 @@ def raw_video_list(filename: str) -> List[str]:
 
 def videos_list(filename: str) -> List[str]:
     return [
-        f'ytsearch:{video}' if 'http' not in video else video
+        f"ytsearch:{video}" if "http" not in video else video
         for video in raw_video_list(filename)
     ]
 
 
 def download_videos(dest: str, videos: List[str], extract_audio: bool) -> str:
     options = {
-        'ignoreerrors': True,
-        'extractaudio': extract_audio,
-        'audioformat': 'best',
-        'outtmpl': f'{dest}/%(autonumber)s - %(title)s.%(ext)s',
+        "ignoreerrors": True,
+        "extractaudio": extract_audio,
+        "audioformat": "best",
+        "outtmpl": f"{dest}/%(autonumber)s - %(title)s.%(ext)s",
     }
     with youtube_dl.YoutubeDL(options) as ydl:
         ydl.download(videos)
@@ -40,29 +41,28 @@ def download_videos(dest: str, videos: List[str], extract_audio: bool) -> str:
 
 def write_playlist(dest: str):
     list_of_songs = os.listdir(dest)
-    with open(os.path.join(dest, 'playlist.m3u8'), 'w') as fd:
-        fd.write('\n'.join(list_of_songs))
+    with open(os.path.join(dest, "playlist.m3u8"), "w") as fd:
+        fd.write("\n".join(list_of_songs))
 
 
 def main(args):
-    write_playlist(download_videos(
-        os.path.join(os.path.dirname(args.playlist), args.playlist + '-dl'),
-        videos_list(args.playlist),
-        args.extract_audio
-    ))
+    write_playlist(
+        download_videos(
+            os.path.join(os.path.dirname(args.playlist), args.playlist + "-dl"),
+            videos_list(args.playlist),
+            args.extract_audio,
+        )
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        'playlist',
+        "playlist",
         type=os.path.abspath,
-        help='File containing one video title or url per line'
+        help="File containing one video title or url per line",
     )
     parser.add_argument(
-        '-x',
-        '--extract-audio',
-        action='store_true',
-        help='Only keep audio'
+        "-x", "--extract-audio", action="store_true", help="Only keep audio"
     )
     main(parser.parse_args())

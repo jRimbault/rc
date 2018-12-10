@@ -1,29 +1,31 @@
 #!/usr/bin/env python3
 
+import configparser
 import os
 import platform
 import subprocess
-import configparser
-from pip._internal import main as pipmain
 from typing import List
+
+from pip._internal import main as pipmain
+
 
 DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 def ask(question: str, default: str = None) -> bool:
     def prompt(default):
-        prompts = {'Y': ('Y/n', 'Y'), 'N': ('y/N', 'N')}
+        prompts = {"Y": ("Y/n", "Y"), "N": ("y/N", "N")}
         try:
             return prompts[default]
         except KeyError:
-            return ('y/n', '')
+            return ("y/n", "")
 
     def get_reply(question, default):
         reply = input(question)
         return reply if reply else default
 
     def answer(reply):
-        answers = {'y': True, 'Y': True, 'n': False, 'N': False}
+        answers = {"y": True, "Y": True, "n": False, "N": False}
         try:
             return answers[reply[0]]
         except KeyError:
@@ -44,7 +46,7 @@ def ask(question: str, default: str = None) -> bool:
 def has(executable: str) -> bool:
     join = os.path.join
     isfile = os.path.isfile
-    path = os.environ['PATH'].split(path_sep)
+    path = os.environ["PATH"].split(path_sep)
     return any([isfile(join(dir, executable)) for dir in path])
 
 
@@ -59,17 +61,17 @@ def get_packages(file: str) -> List[str]:
 def run(command: str, args=None) -> subprocess.CompletedProcess:
     if args is None:
         args = []
-    cp = subprocess.run(command.split(' ') + args)
+    cp = subprocess.run(command.split(" ") + args)
     if cp.returncode != 0:
-        raise Exception(f'Error running : {command}')
+        raise Exception(f"Error running : {command}")
     return cp
 
 
 def ps1_run(command: str, args=None) -> subprocess.CompletedProcess:
     if args is None:
         args = []
-    powershell = 'powershell'
-    return run(f'{powershell} {command}', args)
+    powershell = "powershell"
+    return run(f"{powershell} {command}", args)
 
 
 def linux():
@@ -80,19 +82,19 @@ def linux():
         """
 
         def os_release_file():
-            section = 'fake_section'
+            section = "fake_section"
 
             def fake_read(fp):
-                yield f'[{section}]\n'
+                yield f"[{section}]\n"
                 yield from fp
 
             cfg = configparser.ConfigParser()
-            with open('/etc/os-release') as fp:
+            with open("/etc/os-release") as fp:
                 cfg.read_file(fake_read(fp))
 
             return cfg[section]
 
-        return os_release_file()['ID'].strip('"')
+        return os_release_file()["ID"].strip('"')
 
     def install(update: str, install: str, packages: List[str]):
         run(update)
@@ -100,65 +102,52 @@ def linux():
 
     def apt():
         install(
-            'sudo apt-get update -q',
-            'sudo apt-get -q install',
-            get_packages('apt')
+            "sudo apt-get update -q", "sudo apt-get -q install", get_packages("apt")
         )
 
     def pacman():
-        install(
-            'sudo pacman -Syyq',
-            'sudo pacman -Sq',
-            get_packages('pacman')
-        )
+        install("sudo pacman -Syyq", "sudo pacman -Sq", get_packages("pacman"))
 
-    distro = {
-        'ubuntu': apt,
-        'debian': apt,
-        'arch': pacman,
-    }
+    distro = {"ubuntu": apt, "debian": apt, "arch": pacman}
 
-    if has('sudo') and ask("Install system packages ?", 'N'):
+    if has("sudo") and ask("Install system packages ?", "N"):
         distro[distro_id()]()
 
 
 def pip_setup():
     def install(packages: List[str]):
-        pipmain(['install', '--user', '--upgrade', 'pip'])
-        pipmain(['install', '--user'] + packages)
+        pipmain(["install", "--user", "--upgrade", "pip"])
+        pipmain(["install", "--user"] + packages)
 
-    if ask("Install pip packages ?", 'N'):
-        install(get_packages('pip'))
+    if ask("Install pip packages ?", "N"):
+        install(get_packages("pip"))
 
 
 def npm_setup():
     def install(packages: List[str]):
-        run(f'{npm_exe} install -g', packages)
+        run(f"{npm_exe} install -g", packages)
 
-    if has(npm_exe) and ask("Install npm packages ?", 'N'):
-        install(get_packages('npm'))
+    if has(npm_exe) and ask("Install npm packages ?", "N"):
+        install(get_packages("npm"))
 
 
 def windows():
     def install_scoop():
-        ps1_run('Set-ExecutionPolicy RemoteSigned -scope CurrentUser')
-        url = 'https://get.scoop.sh'
+        ps1_run("Set-ExecutionPolicy RemoteSigned -scope CurrentUser")
+        url = "https://get.scoop.sh"
         ps1_run(f'iex (new-object net.webclient).downloadstring("{url}")')
 
     def install(packages: List[str]):
-        ps1_run('scoop install', packages)
+        ps1_run("scoop install", packages)
 
-    if not has('scoop') and ask("Install scoop ?", 'N'):
+    if not has("scoop") and ask("Install scoop ?", "N"):
         install_scoop()
 
-    if has('scoop') and ask("Install scoop packages ?", 'N'):
-        install(get_packages('scoop'))
+    if has("scoop") and ask("Install scoop packages ?", "N"):
+        install(get_packages("scoop"))
 
 
-systems = {
-    'Linux': (linux, ':', 'npm'),
-    'Windows': (windows, ';', 'npm.cmd'),
-}
+systems = {"Linux": (linux, ":", "npm"), "Windows": (windows, ";", "npm.cmd")}
 
 system_setup, path_sep, npm_exe = systems[platform.system()]
 
@@ -169,5 +158,5 @@ def main():
     npm_setup()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

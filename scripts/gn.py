@@ -14,10 +14,10 @@
 #   185 lines (+200, -15)
 #   650 words (+10, -660)
 
-import sys
+import fileinput
 import os
 import re
-import fileinput
+import sys
 
 
 def get_lines(diff_lines):
@@ -25,8 +25,9 @@ def get_lines(diff_lines):
     # file).  The same goes for removed lines, except '-' instead of '+'.
     def condition(char):
         return lambda l: l.startswith(char) and not l.startswith(char * 3)
-    is_added = condition('+')
-    is_removed = condition('-')
+
+    is_added = condition("+")
+    is_removed = condition("-")
 
     added_lines = [line for line in diff_lines if is_added(line)]
     removed_lines = [line for line in diff_lines if is_removed(line)]
@@ -36,10 +37,9 @@ def get_lines(diff_lines):
 
 def get_words(added_lines, removed_lines):
     def word_count(lines):
-        return [word
-                for line in lines
-                for word in line.split()
-                if re.match(r'^\w+', word)]
+        return [
+            word for line in lines for word in line.split() if re.match(r"^\w+", word)
+        ]
 
     return word_count(added_lines), word_count(removed_lines)
 
@@ -47,13 +47,16 @@ def get_words(added_lines, removed_lines):
 def display(diff_lines, added_lines, added_words, removed_lines, removed_words):
     def delta(added, removed):
         d = added - removed
-        return ['', '+'][d > 0] + str(d)
+        return ["", "+"][d > 0] + str(d)
+
     delta_lines = delta(added_lines, removed_lines)
     delta_words = delta(added_words, removed_words)
 
-    print(f'{diff_lines} lines of diff\n'
-          f'{delta_lines} lines (+{added_lines}, -{removed_lines})\n'
-          f'{delta_words} words (+{added_words}, -{removed_words})')
+    print(
+        f"{diff_lines} lines of diff\n"
+        f"{delta_lines} lines (+{added_lines}, -{removed_lines})\n"
+        f"{delta_words} words (+{added_words}, -{removed_words})"
+    )
 
 
 def main(fileinput):
@@ -65,11 +68,11 @@ def main(fileinput):
         len(added_lines),
         len(added_words),
         len(removed_lines),
-        len(removed_words)
+        len(removed_words),
     )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         main(fileinput.input())
     except KeyboardInterrupt:
