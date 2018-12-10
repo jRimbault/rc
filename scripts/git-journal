@@ -13,9 +13,9 @@ ALIAS = {
 }
 
 
-def main(argv):
-    if argv[1] in ALIAS:
-        return git_command(ALIAS[argv[1]] + argv[2:])
+def main(argv, aliases):
+    if argv[1] in aliases:
+        return git_command(aliases[argv[1]] + argv[2:])
     return git_command(argv[1:])
 
 
@@ -26,7 +26,7 @@ def git_command(command: list):
     return subprocess.call(git + command)
 
 
-def usage():
+def usage(aliases):
     text = [
         f'Usage: {os.path.basename(__file__)} <command>',
         f'{os.path.basename(__file__)} is a script meant to interact with a'
@@ -34,7 +34,7 @@ def usage():
         'Any git command is a valid subcommand.',
         'Aliases added by this script:',
     ]
-    for alias, command in ALIAS.items():
+    for alias, command in aliases.items():
         text.append(f'  {alias:<6}: {" ".join(command)}')
     print('\n'.join(text))
     return 0
@@ -42,9 +42,9 @@ def usage():
 
 if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] == 'help':
-        sys.exit(usage())
+        sys.exit(usage(ALIAS))
     try:
-        sys.exit(main(sys.argv))
+        sys.exit(main(sys.argv, ALIAS))
     except KeyError:
         sys.exit(
             "Set the environment variable 'JOURNAL_REPO' to a path pointing "
