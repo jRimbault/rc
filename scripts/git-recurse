@@ -8,7 +8,7 @@
 #   https://github.com/garybernhardt/dotfiles
 #
 # Example usage:
-#   $ run-command-on-git-revisions.sh origin/master master 'python runtests.py'
+#   $ git recurse origin/master master 'python runtests.py'
 
 set -e
 
