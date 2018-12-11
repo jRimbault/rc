@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+JOURNAL_REPO="$SCHOOL_REPO" git journal $*

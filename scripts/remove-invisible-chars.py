@@ -12,7 +12,7 @@ def stripped(text):
     """
 
     def whitelist(c: int) -> bool:
-        if 32 < c < 127 or c == 10:
+        if 31 < c < 127 or c == 10:
             return True
         return False
 
