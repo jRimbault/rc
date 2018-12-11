@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import fileinput
-import sys
 
 
 def stripped(text):
@@ -10,15 +9,15 @@ def stripped(text):
     Remove all characters not between the ascii 32 and 127
     and not an ascii 10 (line feed)
     """
-
-    def whitelist(c: int) -> bool:
+    def whitelist(c) -> bool:
+        c = ord(c)
         if 31 < c < 127:
             return True
         if c == 10:
             return True
         return False
 
-    return "".join(c for c in text if whitelist(ord(c)))
+    return "".join(filter(whitelist, text))
 
 
 def main(file):
