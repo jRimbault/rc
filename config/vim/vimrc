@@ -4,6 +4,8 @@ syntax on
 set number
 set relativenumber
 
+colorscheme erelde
+
 " Default indentation
 set smartindent
 set autoindent

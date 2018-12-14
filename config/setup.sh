@@ -17,6 +17,7 @@ vim_config()
 {
   mkdir -p "$HOME/.vim"
   soft_force_symlink "$DIR/vim/vimrc" "$HOME/.vim/vimrc"
+  soft_force_symlink "$DIR/vim/colors" "$HOME/.vim/colors"
 }
 
 setup_home()
