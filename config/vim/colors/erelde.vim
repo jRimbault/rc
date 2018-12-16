@@ -96,7 +96,7 @@ endfunction
 
 " Suggested group names from naming conventions -- ':h E669'
 call s:Defn('Comment', s:fg('fade'), s:attr('italic'))
-call s:None('Constant') "<- String Character Number Boolean Float
+call s:Defn('Constant', s:fg('fade')) "<- String Character Number Boolean Float
 call s:None('Identifier') "<- Function
 call s:None('Statement') "<- Conditional Repeat Label Operator Keyword Exception
 call s:None('PreProc') "<- Include Define Macro PreCondit

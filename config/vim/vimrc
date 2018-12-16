@@ -1,10 +1,17 @@
 " Basic stuff
 set nocompatible
 syntax on
-set number
-set relativenumber
 
-colorscheme erelde
+" Toggle display of line numbers
+function! ToggleLineNumbers()
+    set number!
+    set relativenumber!
+endfunction
+nnoremap ,l :call ToggleLineNumbers() <cr>
+
+" Set colorscheme for git commit editing :
+autocmd BufRead COMMIT_EDITING colorscheme erelde
+autocmd BufRead COMMIT_EDITMSG colorscheme erelde
 
 " Default indentation
 set smartindent
@@ -32,27 +39,27 @@ set nocindent
 " Trim trailing whitespace
 autocmd BufWritePre * %s/\s\+$//e
 augroup vimrcEx
-  " Clear all autocmds in the group
-  autocmd!
+    " Clear all autocmds in the group
+    autocmd!
 
-  " for javascript, autoindent with two spaces, always expand tabs
-  autocmd FileType javascript,ruby,haml,eruby,yaml,html,sass,cucumber, set ai sw=2 sts=2 et
-  " for python, autoindent with four spaces, always expand tabs
-  autocmd FileType python,c,cpp,h,php set ai sw=4 sts=4 et
+    " for javascript, autoindent with two spaces, always expand tabs
+    autocmd FileType javascript,ruby,haml,eruby,yaml,html,sass,cucumber, set ai sw=2 sts=2 et
+    " for python, autoindent with four spaces, always expand tabs
+    autocmd FileType python,c,cpp,h,php set ai sw=4 sts=4 et
 
-  autocmd! BufRead,BufNewFile *.sass setfiletype sass
+    autocmd! BufRead,BufNewFile *.sass setfiletype sass
 
-  " Don't syntax highlight markdown because it's often wrong
-  autocmd! FileType mkd setlocal syn=off
-  autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
-  autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
-  " *.md is markdown
-  autocmd! BufNewFile,BufRead *.md setlocal ft=
+    " Don't syntax highlight markdown because it's often wrong
+    autocmd! FileType mkd setlocal syn=off
+    autocmd BufRead *.mkd  set ai formatoptions=tcroqn2 comments=n:&gt;
+    autocmd BufRead *.markdown  set ai formatoptions=tcroqn2 comments=n:&gt;
+    " *.md is markdown
+    autocmd! BufNewFile,BufRead *.md setlocal ft=
 
-  " Leave the return key alone when in command line windows, since it's used
-  " to run commands there.
-  autocmd! CmdwinEnter * :unmap <cr>
-  autocmd! CmdwinLeave * :call MapCR()
+    " Leave the return key alone when in command line windows, since it's used
+    " to run commands there.
+    autocmd! CmdwinEnter * :unmap <cr>
+    autocmd! CmdwinLeave * :call MapCR()
 augroup END
 
 " RemoveFancyCharacters COMMAND
