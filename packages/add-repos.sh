@@ -11,6 +11,7 @@ source "$(dirname "$DIR")/shell/common/function.sh"
 declare -gra UBUNTU_PPAS=(
   ppa:ondrej/php
   ppa:deadsnakes/ppa
+  ppa:neovim-ppa/stable
 )
 
 is_ubuntu()

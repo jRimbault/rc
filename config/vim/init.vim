@@ -1,6 +1,7 @@
 " Basic stuff
 set nocompatible
 syntax on
+set termguicolors
 
 " Toggle display of line numbers
 function! ToggleLineNumbers()
@@ -9,8 +10,8 @@ function! ToggleLineNumbers()
 endfunction
 nnoremap ,l :call ToggleLineNumbers() <cr>
 
+
 " Set colorscheme for git commit editing :
-autocmd BufRead COMMIT_EDITING colorscheme erelde
 autocmd BufRead COMMIT_EDITMSG colorscheme erelde
 
 " Default indentation

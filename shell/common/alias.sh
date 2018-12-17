@@ -62,6 +62,8 @@ alias http-server='python3 -m http.server --bind 127.0.0.1 8080'
 alias goto='goto_project'
 
 # text files
+alias vi="nvim"
+alias vim="nvim"
 alias sed-trailing-whitespace="sed 's/[[:space:]]\\+$//'"
 
 # media

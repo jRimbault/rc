@@ -19,7 +19,7 @@ prepend:path "$HOME/.local/bin"
 prepend:path "$HOME/.bin"
 unset -f prepend:path
 
-EDITOR="$(command -v vim)"
+EDITOR="$(command -v nvim)"
 
 export N_PREFIX
 export PATH
