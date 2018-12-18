@@ -28,7 +28,6 @@ main()
   if is_ubuntu; then
     for ppa in "${UBUNTU_PPAS[@]}"; do
       sudo add-apt-repository "$ppa"
-      sudo apt-get udpate -q
     done
   fi
 }

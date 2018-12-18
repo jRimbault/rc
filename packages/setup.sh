@@ -15,6 +15,7 @@ get_packages()
 install_apt_packages()
 {
   echo "Installing system packages"
+  bash "$DIR/add-repos.sh"
   local -a packages
   packages=($(get_packages apt))
   sudo apt-get update -qq

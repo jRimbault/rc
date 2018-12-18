@@ -25,7 +25,7 @@ ohmyzsh_shell()
   soft_force_symlink "$DIR/common/alias.sh" "$HOME/.oh-my-zsh/custom/alias.zsh"
   soft_force_symlink "$DIR/common/function.sh" "$HOME/.oh-my-zsh/custom/function.zsh"
   soft_force_symlink "$DIR/common/gh.sh" "$HOME/.oh-my-zsh/custom/gh.zsh"
-  soft_force_symlink "$DIR/zsh/keybings.zsh" "$HOME/.oh-my-zsh/custom/keybings.zsh"
+  soft_force_symlink "$DIR/zsh/keybindings.zsh" "$HOME/.oh-my-zsh/custom/keybindings.zsh"
   soft_force_symlink "$DIR/zsh/symbols.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/symbols.zsh-theme"
   echo "Zed shell profile installed"
 }
@@ -38,7 +38,7 @@ purezsh_shell()
   soft_force_symlink "$DIR/common/alias.sh" "$HOME/.config/zsh/alias"
   soft_force_symlink "$DIR/common/function.sh" "$HOME/.config/zsh/function"
   soft_force_symlink "$DIR/common/gh.sh" "$HOME/.config/zsh/gh"
-  soft_force_symlink "$DIR/zsh/keybings.zsh" "$HOME/.config/zsh/keybings"
+  soft_force_symlink "$DIR/zsh/keybindings.zsh" "$HOME/.config/zsh/keybindings"
   soft_force_symlink "$DIR/zsh/symbols.zsh-theme" "$HOME/.config/zsh/theme"
   echo "Zed shell profile installed"
 }
@@ -58,8 +58,8 @@ bash_shell()
 
 profile()
 {
-  soft_force_symlink "$DIR/common/profile" "$HOME/.config/bash/.profile"
-  soft_force_symlink "$DIR/common/profile" "$HOME/.config/bash/.zprofile"
+  soft_force_symlink "$DIR/common/profile" "$HOME/.profile"
+  soft_force_symlink "$DIR/common/profile" "$HOME/.zprofile"
 }
 
 main()
