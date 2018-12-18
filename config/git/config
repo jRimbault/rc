@@ -1,6 +1,5 @@
-[user]
-	email = jacques.rimbault@gmail.com
-	name = jRimbault
+[include]
+	path = ~/.config/git/local
 [core]
 	excludesfile = ~/.config/git/ignore
 	fileMode = true
