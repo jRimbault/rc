@@ -16,7 +16,7 @@ def stripped(text):
             return True
         return False
 
-    return "".join(map(chr, filter(whitelist, map(ord, text))))
+    return "".join(filter(lambda c: whitelist(ord(c)), text))
 
 
 def main(file):
