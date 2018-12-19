@@ -4,7 +4,8 @@ autocmd!
 " Basic stuff
 set nocompatible
 syntax on
-"set termguicolors
+set termguicolors
+colorscheme onedark
 
 " Toggle display of line numbers
 function! ToggleLineNumbers()
@@ -163,3 +164,11 @@ endfunction
 nnoremap ,ts :call ToggleStatusLine() <cr>
 
 set laststatus=0
+
+function! ToggleAll()
+    call ToggleLineNumbers()
+    call ToggleStatusLine()
+    call ToggleWhiteSpace()
+    call HighlightCurrentLine()
+endfunction
+nnoremap ,ta :call ToggleAll() <cr>
