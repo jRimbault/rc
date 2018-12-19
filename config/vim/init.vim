@@ -4,7 +4,7 @@ autocmd!
 " Basic stuff
 set nocompatible
 syntax on
-set termguicolors
+"set termguicolors
 
 " Toggle display of line numbers
 function! ToggleLineNumbers()
@@ -13,6 +13,12 @@ function! ToggleLineNumbers()
 endfunction
 nnoremap ,l :call ToggleLineNumbers() <cr>
 
+" Toggle display of whitespace
+set listchars=space:·
+function! ToggleWhiteSpace()
+    set list!
+endfunction
+nnoremap ,ws :call ToggleWhiteSpace() <cr>
 
 " Set colorscheme for git commit editing :
 autocmd BufRead COMMIT_EDITMSG colorscheme white
