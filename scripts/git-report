@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+IFS=$'\n'
+for author in $(git authors); do
+  git insertions "$author" $*
+done
