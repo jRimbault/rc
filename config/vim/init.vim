@@ -15,7 +15,8 @@ endfunction
 nnoremap ,l :call ToggleLineNumbers() <cr>
 
 " Toggle display of whitespace
-set listchars=space:·
+let &showbreak='↪ '
+set listchars=space:·,tab:»\ ,extends:›,precedes:‹,eol:↲
 function! ToggleWhiteSpace()
     set list!
 endfunction
@@ -30,7 +31,7 @@ set showmatch
 set hlsearch
 
 " keep cursor in the middle
-set scrolloff=5
+set scrolloff=8
 
 " Swap files and no backups (don't)
 set nobackup
