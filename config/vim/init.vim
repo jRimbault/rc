@@ -23,7 +23,7 @@ endfunction
 nnoremap ,ws :call ToggleWhiteSpace() <cr>
 
 " Set colorscheme for git commit editing :
-autocmd BufRead COMMIT_EDITMSG colorscheme white
+" autocmd BufRead COMMIT_EDITMSG colorscheme white
 
 " Smart search
 set ignorecase smartcase
@@ -173,3 +173,9 @@ function! ToggleAll()
     call HighlightCurrentLine()
 endfunction
 nnoremap ,ta :call ToggleAll() <cr>
+
+inoremap { {}<esc>i
+inoremap ( ()<esc>i
+inoremap [ []<esc>i
+inoremap " ""<esc>i
+inoremap ' ''<esc>i
