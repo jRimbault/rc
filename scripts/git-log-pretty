@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Control character, this is not a space, it's an EM SPACE
 # U+2003
@@ -9,10 +9,6 @@ CDATE=' '
 # Log output:
 #
 # * 51c333e  12 days  Gary Bernhardt   add vim-eunuch
-#
-# Branch output:
-#
-# * release/v1.1  13 days  Leyan Lo   add pretty_git_branch
 #
 # The time massaging regexes start with ^[^$CCDATE]* because that ensures that they
 # only operate before the first "$CCDATE". That "$CCDATE" will be the beginning of the
@@ -31,21 +27,8 @@ LOG_REFS="%C(always,yellow)%d%C(always,reset)"
 
 LOG_FORMAT="$LOG_HASH$CCHAR$LOG_RELATIVE_TIME$CCHAR$LOG_AUTHOR$CCHAR$LOG_SUBJECT$LOG_REFS"
 
-BRANCH_PREFIX="%(HEAD)"
-BRANCH_REF="%(color:red)%(refname:short)%(color:reset)"
-BRANCH_HASH="%(color:yellow)%(objectname:short)%(color:reset)"
-BRANCH_DATE="%(color:green)%(committerdate:relative)$CDATE%(color:reset)"
-BRANCH_AUTHOR="%(color:blue)%(authorname)%(color:reset)"
-BRANCH_CONTENTS="%(contents:subject)"
-
-BRANCH_FORMAT="$BRANCH_PREFIX$CCHAR$BRANCH_REF$CCHAR$CCHAR$BRANCH_DATE$CCHAR$BRANCH_AUTHOR$CCHAR$BRANCH_CONTENTS"
-
-show_git_head() {
-  pretty_git_log -1
-  git show -p --pretty="tformat:"
-}
-
-pretty_git_log() {
+pretty_git_log()
+{
   git log \
     --graph \
     --pretty="tformat:$LOG_FORMAT" $* |
@@ -53,22 +36,8 @@ pretty_git_log() {
     git_page_maybe
 }
 
-pretty_git_branch() {
-  git branch \
-    --color=always \
-    --format="$BRANCH_FORMAT" $* |
-    pretty_git_format
-}
-
-pretty_git_branch_sorted() {
-  git branch \
-    --color=always \
-    --sort=-committerdate \
-    --format="$BRANCH_FORMAT" $* |
-    pretty_git_format
-}
-
-pretty_git_format() {
+pretty_git_format()
+{
   # Replace (2 years ago) with (2 years)
   sed -Ee "s/(^[^$CDATE]*) ago$CDATE/\\1$CDATE/" |
   # Replace (2 years, 5 months) with (2 years)
@@ -78,7 +47,8 @@ pretty_git_format() {
   column -s "$CCHAR" -t
 }
 
-git_page_maybe() {
+git_page_maybe()
+{
   # Page only if we're asked to.
   if [ -n "$GIT_NO_PAGER" ]; then
     cat
@@ -87,3 +57,9 @@ git_page_maybe() {
     less --quit-if-one-screen --no-init --RAW-CONTROL-CHARS --chop-long-lines
   fi
 }
+
+
+# do not execute script if it is sourced or downloaded-piped to bash
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  pretty_git_log "$@"
+fi

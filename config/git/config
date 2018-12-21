@@ -1,5 +1,5 @@
 [include]
-	path = ~/.config/git/local
+	path = ~/.gitconfig_local
 [core]
 	excludesfile = ~/.config/git/ignore
 	fileMode = true
@@ -12,15 +12,12 @@
 	undo = !legit undo
 	branches = !legit branches
 
+	# Pretty printing
 	# logging
-	l = "!. ~/.config/git/helper.sh && pretty_git_log"
-	# less pretty but for Windows
-	lw = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
+	l = log-pretty
+	# list branches with their last commit
+	b = branch-pretty
 
-	# list branches with their last commit, without paging
-	b = "!. ~/.config/git/helper.sh && pretty_git_branch"
-	# same, sorted
-	bs = "!. ~/.config/git/helper.sh && pretty_git_branch_sorted"
-	# Windows
+	# less pretty but for Windows
+	log-oneline = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
 	bw = branch -v --color=always --sort=-committerdate
-	authors = !git log --format='%an <%ae>' | sort -u

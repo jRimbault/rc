@@ -7,10 +7,8 @@ source "$(dirname "$DIR")/shell/common/function.sh"
 
 git_config()
 {
-  mkdir -p "$HOME/.config/git"
-  soft_force_symlink "$DIR/git/config" "$HOME/.config/git/config"
-  soft_force_symlink "$DIR/git/ignore" "$HOME/.config/git/ignore"
-  soft_force_symlink "$DIR/git/helper.sh" "$HOME/.config/git/helper.sh"
+  mkdir -p "$HOME/.config"
+  soft_force_symlink "$DIR/git" "$HOME/.config/git"
 }
 
 vim_config()
