@@ -32,10 +32,10 @@ LOG_REFS="%C(always,yellow)%d%C(always,reset)"
 LOG_FORMAT="$LOG_HASH$CCHAR$LOG_RELATIVE_TIME$CCHAR$LOG_AUTHOR$CCHAR$LOG_SUBJECT$LOG_REFS"
 
 BRANCH_PREFIX="%(HEAD)"
-BRANCH_REF="%(color:red)%(color:bold)%(refname:short)%(color:reset)"
+BRANCH_REF="%(color:red)%(refname:short)%(color:reset)"
 BRANCH_HASH="%(color:yellow)%(objectname:short)%(color:reset)"
 BRANCH_DATE="%(color:green)%(committerdate:relative)$CDATE%(color:reset)"
-BRANCH_AUTHOR="%(color:blue)%(color:bold)%(authorname)%(color:reset)"
+BRANCH_AUTHOR="%(color:blue)%(authorname)%(color:reset)"
 BRANCH_CONTENTS="%(contents:subject)"
 
 BRANCH_FORMAT="$BRANCH_PREFIX$CCHAR$BRANCH_REF$CCHAR$CCHAR$BRANCH_DATE$CCHAR$BRANCH_AUTHOR$CCHAR$BRANCH_CONTENTS"
