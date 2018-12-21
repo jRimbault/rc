@@ -23,7 +23,7 @@ prepend:path "$N_PREFIX/bin"
 prepend:path "$HOME/.local/bin"
 prepend:path "$HOME/.bin"
 
-EDITOR="$(command -v nvim)"
+EDITOR="$(command -v vim)"
 
 export N_PREFIX
 export PATH
