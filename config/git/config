@@ -4,7 +4,7 @@
 	excludesfile = ~/.config/git/ignore
 	fileMode = true
 [alias]
-	# depends on the 'legit' package
+	## Depends on the 'legit' package
 	switch = !legit switch
 	sync = !legit sync
 	publish = !legit publish
@@ -12,12 +12,13 @@
 	undo = !legit undo
 	branches = !legit branches
 
-	# Pretty printing
+	## Pretty printing (call custom scripts)
 	# logging
 	l = log-pretty
 	# list branches with their last commit
 	b = branch-pretty
 
-	# less pretty but for Windows
+	## Only git (no hidden deps)
+    log-read-stats = log --graph --stat --decorate --all
 	log-oneline = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
-	bw = branch -v --color=always --sort=-committerdate
+	branches-sorted = branch -v --color=always --sort=-committerdate
