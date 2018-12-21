@@ -153,6 +153,12 @@ __remove_base_dir()
 # you really can't beat sed
 find_git_repos()
 {
+  if has fd; then
+    fd .git "$1" -HI -t d |
+      __remove_trailing_dotgit |
+      __remove_base_dir "$1/"
+    return $?
+  fi
   find "$1" -name .git -type d -prune |
     __remove_trailing_dotgit |
     __remove_base_dir "$1/"
