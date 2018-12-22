@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Control character, this is not a space, it's an EM SPACE
 # U+2003

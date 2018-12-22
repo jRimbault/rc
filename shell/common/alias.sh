@@ -53,7 +53,7 @@ alias mirror-website="wget --mirror --convert-links --adjust-extension --page-re
 alias http-server='python3 -m http.server --bind 127.0.0.1 8080'
 
 # project management
-alias goto='goto_project'
+alias p='goto_project'
 
 # text files
 alias vi="vim"
