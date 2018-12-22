@@ -4,18 +4,18 @@ import collections
 import fileinput
 
 
-def most_common_chars(file):
-    counter = collections.Counter("".join(file))
-    return counter.most_common()
+def rmost_common(iterable):
+    counter = collections.Counter(iterable)
+    return reversed(counter.most_common())
 
 
-def main(file):
-    to_string = lambda char, count: f"{repr(char).rjust(4)} : {count}"
-    display = (
-        to_string(char, count) for char, count in reversed(most_common_chars(file))
-    )
-    print("\n".join(display))
+def display_counter(counter):
+    print("\n".join(f"{repr(el).rjust(4)} : {count}" for el, count in counter))
+
+
+def main(text):
+    display_counter(rmost_common(text))
 
 
 if __name__ == "__main__":
-    main(fileinput.input())
+    main("".join(fileinput.input()))
