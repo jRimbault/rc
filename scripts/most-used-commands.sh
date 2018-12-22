@@ -7,7 +7,7 @@ sorting()
   # removes the local executions
   grep -v "./" |
   column -c3 -s " " -t |
-  sort -nr |
+  sort -n |
   nl
 }
 

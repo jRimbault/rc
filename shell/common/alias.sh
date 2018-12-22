@@ -9,7 +9,7 @@ alias ......='cd ../../../../..'
 
 
 # system management
-alias service='sudo service'
+alias svi='sudoedit'
 alias svim='sudoedit'
 alias apt='sudo apt'
 alias zshconfig='$EDITOR ~/.zshrc'
