@@ -39,7 +39,7 @@ alias gpd='git push --dry-run'
 alias gss='git status -s'
 alias gst='git status'
 alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
-alias gfb='git branch | cut -c 3- | fzy'
+alias gfb='git branch | cut -c 3- | fzf'
 alias fco='gfb | xargs git checkout'
 
 # python

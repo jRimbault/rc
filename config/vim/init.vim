@@ -121,7 +121,7 @@ command! RemoveFancyCharacters :call RemoveFancyCharacters()
 " Insert a remark about that in the commit message
 " The list will only be composed of previous committer to the current repo
 function! CommitCoAuthoredBy()
-    read! echo "Co-authored-by: $(git authors | fzy)"
+    read! echo "Co-authored-by: $(git authors | fzf)"
 endfunction
 command! CommitCoAuthoredBy :call CommitCoAuthoredBy()
 

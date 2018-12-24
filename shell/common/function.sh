@@ -153,7 +153,7 @@ __remove_base_dir()
 # you really can't beat sed
 find_git_repos()
 {
-  if has fd; then
+  if has fd 2> /dev/null; then
     fd .git "$1" -HI -t d |
       __remove_trailing_dotgit |
       __remove_base_dir "$1/"
@@ -170,7 +170,7 @@ goto_project()
   local dest base_dir
   GH_BASE_DIR=${GH_BASE_DIR:-"$HOME/Documents"}
   base_dir="$(dirname "$GH_BASE_DIR")"
-  dest=$(find_git_repos "$base_dir" | fzy)
+  dest=$(find_git_repos "$base_dir" | fzf)
   [ -z "$dest" ] && return 0
   cd "$base_dir/$dest" || return 1
 }
@@ -188,7 +188,7 @@ git_log_pager_short()
 history_fuzzy_finder()
 {
   local exe
-  exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzy)"
+  exe="$(tail -n 500 "$HISTFILE" | cut -d';' -f 2 | fzf)"
   echo "$exe"
   eval "$exe"
 }
@@ -213,7 +213,7 @@ n()
   local dir note
   dir=${NOTE_DIR:-"/tmp/tmp.notes"}
   mkdir -p "$dir"
-  note=$(ls -1 "$dir" | fzy)
+  note=$(find "$dir" -type f -printf "%f\n" | fzf)
   if [[ -n "$note" ]]; then
     vim "$dir/$note"
   fi
