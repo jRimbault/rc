@@ -1,24 +1,24 @@
 [include]
-	path = ~/.gitconfig_local
+    path = ~/.gitconfig_local
 [core]
-	excludesfile = ~/.config/git/ignore
-	fileMode = true
+    excludesfile = ~/.config/git/ignore
+    fileMode = true
 [alias]
-	## Depends on the 'legit' package
-	switch = !legit switch
-	sync = !legit sync
-	publish = !legit publish
-	unpublish = !legit unpublish
-	undo = !legit undo
-	branches = !legit branches
+    ## Depends on the 'legit' package
+    switch = !legit switch
+    sync = !legit sync
+    publish = !legit publish
+    unpublish = !legit unpublish
+    undo = !legit undo
+    branches = !legit branches
 
-	## Pretty printing (call custom scripts)
-	# logging
-	l = log-pretty
-	# list branches with their last commit
-	b = branch-pretty
+    ## Pretty printing (call custom scripts)
+    # logging
+    l = log-pretty
+    # list branches with their last commit
+    b = branch-pretty
 
-	## Only git (no hidden deps)
+    ## Only git (no hidden deps)
     log-read-stats = log --graph --stat --decorate --all
-	log-oneline = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
-	branches-sorted = branch -v --color=always --sort=-committerdate
+    log-oneline = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
+    branches-sorted = branch -v --color=always --sort=-committerdate
