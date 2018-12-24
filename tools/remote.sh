@@ -2,7 +2,7 @@
 
 set -euo pipefail
 umask g-wx,o-wx
-readonly CLONE_DIR="$HOME/github.com/jRimbault"
+readonly CLONE_DIR="$HOME/Documents/github.com/jRimbault"
 
 has()
 {
