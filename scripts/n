@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+dir=${NOTES_DIR:-"/tmp/tmp.notes"}
+if [[ ! -d "$dir" ]]; then
+  mkdir -p "$dir"
+fi
+cd "$dir" || exit 1
+
+if [[ -n "$*" ]]; then
+  vi $*
+else
+  v
+fi

@@ -206,15 +206,3 @@ run_since_last_push()
   branch=$(git rev-parse --abbrev-ref HEAD)
   git recurse origin/"$branch" "$branch" "$*"
 }
-
-# take a temp note
-n()
-{
-  local dir note
-  dir=${NOTE_DIR:-"/tmp/tmp.notes"}
-  mkdir -p "$dir"
-  note=$(find "$dir" -type f -printf "%f\n" | fzf)
-  if [[ -n "$note" ]]; then
-    vim "$dir/$note"
-  fi
-}

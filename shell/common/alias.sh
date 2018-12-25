@@ -57,7 +57,6 @@ alias p='goto_project'
 
 # text files
 alias vi="vim"
-alias vim="vim"
 alias sed-trailing-whitespace="sed 's/[[:space:]]\\+$//'"
 
 # media
