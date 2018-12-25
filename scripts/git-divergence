@@ -23,9 +23,8 @@ ensure_valid_ref()
 show_rev()
 {
   rev=$1
-  git log -1 $rev --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
-  echo
-  git di $rev^..$rev | diffstat
+  git -c color.ui=always log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset' -1 $rev
+  git diff $rev^..$rev | diffstat -C
   echo
 }
 
@@ -53,10 +52,9 @@ show_rev()
     show_rev $rev
   done
 
-  echo
   echo outgoing:
   echo
   for rev in `git rev-list $REMOTE..$LOCAL`; do
     show_rev $rev
   done
-) | less -r
+) | less
