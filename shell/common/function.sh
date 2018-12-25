@@ -206,3 +206,13 @@ run_since_last_push()
   branch=$(git rev-parse --abbrev-ref HEAD)
   git recurse origin/"$branch" "$branch" "$*"
 }
+
+italic() { echo -e "\e[3m$*\e[0m"; }
+bold() { echo -e "\e[1m$*\e[0m"; }
+underline() { echo -e "\e[4m$*\e[0m"; }
+strikethrough() { echo -e "\e[9m$*\e[0m"; }
+
+padfortune()
+{
+  italic "$(fortune -a $* | sed -e 's/^/    /g')"
+}
