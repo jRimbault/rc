@@ -19,6 +19,8 @@
     b = branch-pretty
 
     ## Only git (no hidden deps)
-    log-read-stats = log --graph --stat --decorate --all
+    graph = log --graph --stat --decorate --all
     log-oneline = log --graph --all --pretty='%Cred%h%Creset %Cgreen%cr %Cblue%an%Creset %s%C(yellow)%d%Creset'
     branches-sorted = branch -v --color=always --sort=-committerdate
+    diff-last = diff HEAD~1
+    ds = diff --stat
