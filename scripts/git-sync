@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# TODO
+#  formally check if I should pull or push or do both
+#  fetch remote get diff etc
+
+set -e
+
+
+if [[ -z "$(git status --porcelain)" ]]; then
+  git pull -r
+  git push
+else
+  git status
+fi
