@@ -1,46 +1,81 @@
+#!/usr/bin/env python3
 """Installation of packages not available in standard repositories"""
+import io
 import json
 import os
 import shutil
+import sys
 import tarfile
 import tempfile
-import urllib.request
+from urllib.request import urlopen
 
 
 def get(url):
-    r = urllib.request.urlopen(url)
+    r = urlopen(url)
     return json.loads(r.read())
 
 
-def dl_targz_to_tmp(url, dest):
-    tmp_file, _ = urllib.request.urlretrieve(url)
-    tar = tarfile.open(tmp_file)
-    tar.extractall(dest)
-    tar.close()
+def mkdir(d):
+    if not os.path.exists(d):
+        print("mkdir", d)
+        os.mkdir(d)
 
 
-def move_to_localbin(file, dest=None):
-    if dest is None:
-        dest = os.path.basename(file)
-    localbin = os.path.join(os.environ["HOME"], os.path.join(".local", "bin"))
-    shutil.move(file, os.path.join(localbin, dest))
+def local_bin_dir():
+    home = os.path.expanduser("~")
+    local = os.path.join(home, ".local")
+    mkdir(local)
+    local_bin = os.path.join(local, "bin")
+    mkdir(local_bin)
+    return local_bin
 
 
-def download_bin(url, name):
-    with tempfile.TemporaryDirectory() as tmpdir:
-        dl_targz_to_tmp(url, tmpdir)
-        move_to_localbin(os.path.join(tmpdir, name))
+def download_with_progress(url):
+    print("Downloading", url)
+
+    remote_file = urlopen(url)
+    total_size = int(remote_file.headers["Content-Length"].strip())
+
+    data = []
+    bytes_read = 0.0
+
+    while True:
+        d = remote_file.read(8192)
+
+        if not d:
+            print()
+            break
+
+        bytes_read += len(d)
+        data.append(d)
+        sys.stdout.write("\r%2.2f%% downloaded" % (bytes_read / total_size * 100))
+        sys.stdout.flush()
+
+    return b"".join(data)
 
 
 def package_fzf():
-    def package_url():
-        api = get(r"https://api.github.com/repos/junegunn/fzf-bin/releases/latest")
-        linux_amd64, = [asset
-                        for asset in api["assets"]
-                        if "linux_amd64" in asset["name"]]
-        return linux_amd64["browser_download_url"]
+    api_url = r"https://api.github.com/repos/junegunn/fzf-bin/releases/latest"
+    binary = "fzf"
 
-    download_bin(package_url(), "fzf")
+    def package_url():
+        linux_amd64, = [
+            asset["browser_download_url"]
+            for asset in get(api_url)["assets"]
+            if "linux_amd64" in asset["name"]
+        ]
+        return linux_amd64
+
+    dest = os.path.join(local_bin_dir(), binary)
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        compressed = download_with_progress(package_url())
+        with tarfile.open(fileobj=io.BytesIO(compressed)) as tar:
+            tar.extractall(tmpdir)
+        shutil.move(os.path.join(tmpdir, binary), dest)
+
+    os.chmod(dest, 0o744)
+    print("fzf installed to", dest)
 
 
 def main():
