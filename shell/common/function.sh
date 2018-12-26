@@ -128,7 +128,7 @@ ask() {
 has()
 {
   command -v "$1" > /dev/null 2>&1 || {
-    echo "$1 is not installed"
+    >&2 echo "$1 is not installed"
     return 1
   }
   return 0
@@ -153,7 +153,7 @@ __remove_base_dir()
 # you really can't beat sed
 find_git_repos()
 {
-  if has fd 2> /dev/null; then
+  if command -v fd; then
     fd .git "$1" -HI -t d |
       __remove_trailing_dotgit |
       __remove_base_dir "$1/"
