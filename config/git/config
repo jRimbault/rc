@@ -4,14 +4,6 @@
     excludesfile = ~/.config/git/ignore
     fileMode = true
 [alias]
-    ## Depends on the 'legit' package
-    switch = !legit switch
-    sync = !legit sync
-    publish = !legit publish
-    unpublish = !legit unpublish
-    undo = !legit undo
-    branches = !legit branches
-
     ## Pretty printing (call custom scripts)
     # logging
     l = log-pretty
