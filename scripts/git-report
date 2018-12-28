@@ -2,5 +2,6 @@
 
 IFS=$'\n'
 for author in $(git authors); do
-  git insertions "$author" $*
-done
+  git insertions "$author" $* | tac | tr '\n' ' '
+  echo
+done | sort -h
