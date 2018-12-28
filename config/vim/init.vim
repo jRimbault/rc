@@ -167,11 +167,24 @@ nnoremap ,ts :call ToggleStatusLine() <cr>
 
 set laststatus=0
 
+let s:ruler=0
+function! ToggleRuler()
+    if s:ruler == 0
+        set colorcolumn=80
+        let s:ruler=1
+    else
+        set colorcolumn=0
+        let s:ruler=0
+    endif
+endfunction
+nnoremap ,tr :call ToggleRuler() <cr>
+
 function! ToggleAll()
     call ToggleLineNumbers()
     call ToggleStatusLine()
     call ToggleWhiteSpace()
     call HighlightCurrentLine()
+    call ToggleRuler()
 endfunction
 nnoremap ,ta :call ToggleAll() <cr>
 
@@ -180,6 +193,17 @@ inoremap ( ()<esc>i
 inoremap [ []<esc>i
 " inoremap " ""<esc>i
 " inoremap ' ''<esc>i
+
+" run current file
+function! RunFile(filename)
+    if expand("%") != ""
+        :w
+    end
+    if executable(a:filename)
+        exec ":!" . a:filename
+    end
+endfunction
+nnoremap <space><space> :call RunFile(expand("%"))<cr>
 
 " source local config
 runtime lvimrc

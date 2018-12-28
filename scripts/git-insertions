@@ -6,13 +6,50 @@ import sys
 
 
 def main(args):
-    files, insertions, deletions = parse(git_stats(args.author, args.branch))
-    out = [
-        f"{args.author} on {args.branch}",
-        f"{files} files changed, {insertions} insertions(+), {deletions} deletions(-)",
-    ]
-    print("\n".join(out))
+    data = GitData(args.author, args.branch)
+    data.parse(git_stats(data.author, data.branch))
+    if args.csv or not sys.stdout.isatty():
+        print(data.to_csv_line())
+    else:
+        print(data)
     return 0
+
+
+class GitData:
+    def __init__(self, author, branch):
+        self.author = author
+        self.branch = branch
+
+    def parse(self, text):
+        value = lambda l, i: int(l[i]) if len(l) > i else 0
+        files, insertions, deletions = [], [], []
+        for line in text.split("\n"):
+            token = line.split()
+            files.append(value(token, 0))
+            insertions.append(value(token, 3))
+            deletions.append(value(token, 5))
+        self.files = sum(files)
+        self.insertions = sum(insertions)
+        self.deletions = sum(deletions)
+
+    def __repr__(self):
+        return "\n".join([
+            f"{self.author} on {self.branch}",
+            ", ".join([
+                f"{self.files} files changed",
+                f"{self.insertions} insertions(+)",
+                f"{self.deletions} deletions(-)",
+            ])
+        ])
+
+    def to_csv_line(self):
+        return ";".join(map(str, [
+            self.files,
+            self.insertions,
+            self.deletions,
+            self.author,
+            self.branch
+        ]))
 
 
 def git_stats(author, branch="master"):
@@ -20,19 +57,15 @@ def git_stats(author, branch="master"):
     return subprocess.check_output(git, universal_newlines=True)
 
 
-def parse(text):
-    value = lambda l, i: int(l[i]) if len(l) > i else 0
-    files, insertions, deletions = [], [], []
-    for line in text.split("\n"):
-        token = line.split()
-        files.append(value(token, 0))
-        insertions.append(value(token, 3))
-        deletions.append(value(token, 5))
-    return sum(files), sum(insertions), sum(deletions)
-
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("author")
     parser.add_argument("branch", nargs="?", default="master")
-    sys.exit(main(parser.parse_args()))
+    parser.add_argument(
+        "--csv", "-c", action="store_true",
+        help="files;insertions;deletions;author;branch"
+    )
+    try:
+        sys.exit(main(parser.parse_args()))
+    except KeyboardInterrupt:
+        print()

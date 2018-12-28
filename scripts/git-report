@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 IFS=$'\n'
+echo "files;insertions;deletions;author;branch"
 for author in $(git authors); do
-  git insertions "$author" $* | tac | tr '\n' ' '
-  echo
+  git insertions "$author" $*
 done | sort -h
