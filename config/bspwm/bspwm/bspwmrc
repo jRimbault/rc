@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+bash /home/erelde/.xinitrc
+
+bspc monitor -d 1 2 3 4 5 6 7 8
+
+ln -s /home/erelde/Pictures/triangles_abstract/ /tmp/wallpapers
+change_wallpaper && update_wallpaper &
+bspc subscribe node_manage node_unmanage | while read line; do update_wallpaper; done &
+all_floating_windows.sh 4 &
+
+desktops.sh &
+behavior.sh &
+application-rules.sh &
+startup-apps.sh &
+
+xset s off off &
+xset dpms 0 0 0 &
+
+#lemonbuddy example
+xfce4-panel &
+sleep 2 && DISPLAY=:0 update_wallpaper &
