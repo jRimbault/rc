@@ -57,10 +57,15 @@ def git_stats(author, branch="master"):
     return subprocess.check_output(git, universal_newlines=True)
 
 
+def git_current_branch():
+    git = "git symbolic-ref --short -q HEAD".split()
+    return subprocess.check_output(git, universal_newlines=True).strip()
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("author")
-    parser.add_argument("branch", nargs="?", default="master")
+    parser.add_argument("branch", nargs="?", default=git_current_branch())
     parser.add_argument(
         "--csv", "-c", action="store_true",
         help="files;insertions;deletions;author;branch"
