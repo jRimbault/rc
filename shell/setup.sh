@@ -60,6 +60,7 @@ profile()
 {
   soft_force_symlink "$DIR/common/profile" "$HOME/.profile"
   soft_force_symlink "$DIR/common/profile" "$HOME/.zprofile"
+  soft_force_symlink "$DIR/common/def-env-vars" "$HOME/.def-env-vars"
 }
 
 main()

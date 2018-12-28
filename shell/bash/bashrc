@@ -41,4 +41,5 @@ bind -x '"\C-r":"history_fuzzy_finder"'
 # Enable variables in prompt
 shopt -s promptvars
 
+test -f ~/.def-env-vars && . ~/.def-env-vars
 test -f ~/.env && . ~/.env # if environment overwrite previous settings

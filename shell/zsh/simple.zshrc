@@ -16,5 +16,6 @@ test -f ~/.config/zsh/alias && . ~/.config/zsh/alias
 test -f ~/.config/zsh/function && . ~/.config/zsh/function
 test -f ~/.config/zsh/gh && . ~/.config/zsh/gh
 test -f ~/.config/zsh/keybings && . ~/.config/zsh/keybings
+test -f ~/.def-env-vars && . ~/.def-env-vars
 
 test -f ~/.env && . ~/.env # if environment overwrite previous settings
