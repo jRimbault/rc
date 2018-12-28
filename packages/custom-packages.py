@@ -48,8 +48,7 @@ def download_with_progress(url):
 
         bytes_read += len(d)
         data.append(d)
-        sys.stdout.write("\r%2.2f%% downloaded" % (bytes_read / total_size * 100))
-        sys.stdout.flush()
+        print(f"\r{(bytes_read / total_size * 100):6.2f}% downloaded", end=" ")
 
     return b"".join(data)
 
