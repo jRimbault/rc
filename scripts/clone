@@ -1,0 +1,59 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import json
+import subprocess
+import sys
+from urllib.request import urlopen
+
+
+def main(args):
+    repo = fuzzy_selector(user_repos(args.user))
+    if repo == "":
+        return 0
+    return git_clone(args.user, repo)
+
+
+def git_clone(user, repo):
+    clone_dir = os.path.join(os.environ["GH_BASE_DIR"], user, repo)
+    command = f"git clone git@github.com:{user}/{repo}.git {clone_dir}"
+    return subprocess.call(command.split())
+
+
+def user_repos(user):
+    repos = f"https://api.github.com/users/{user}/repos"
+    return (r["name"] for r in get(repos))
+
+
+def get(url):
+    r = urlopen(url)
+    return json.loads(r.read())
+
+
+def fuzzy_selector(words: list, prompt="> ") -> str:
+    """Interactive fuzzy selector over list of things
+
+    Depends on `fzf`.
+    No "word" in the list should have a newline as it is used as
+    delimiter by fzf.
+    Words can be anything as long as their __str__ is only one line.
+    """
+    choices = "\n".join(map(str, words))
+    command = ("fzf", "--prompt", prompt)
+    try:
+        proc = subprocess.Popen(("echo", choices), stdout=subprocess.PIPE)
+        output = subprocess.check_output(command, stdin=proc.stdout)
+        proc.wait()
+        return output.decode("utf-8").strip()
+    except subprocess.CalledProcessError:
+        return ""
+
+
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument("user")
+    try:
+        sys.exit(main(p.parse_args()))
+    except KeyboardInterrupt:
+        print()
