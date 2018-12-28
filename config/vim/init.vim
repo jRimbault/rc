@@ -180,3 +180,6 @@ inoremap ( ()<esc>i
 inoremap [ []<esc>i
 " inoremap " ""<esc>i
 " inoremap ' ''<esc>i
+
+" source local config
+runtime lvimrc
