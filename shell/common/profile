@@ -30,6 +30,6 @@ export PATH
 export EDITOR
 export PYTHONDONTWRITEBYTECODE="true"
 if command -v fd > /dev/null; then
-  export FZF_DEFAULT_COMMAND='fd --type f --max-depth 3'
+  export FZF_DEFAULT_COMMAND='fd --type f --hidden --color never --no-ignore --exclude .git'
 fi
 export LESS="-F -R -X"
