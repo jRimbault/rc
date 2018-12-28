@@ -6,7 +6,7 @@ main()
 {
   IFS=$'\n'
   echo "files;insertions;deletions;author;branch"
-  for author in $(git authors); do
+  for author in $(git authors $*); do
     git insertions "$author" $*
   done | sort -h
 }
