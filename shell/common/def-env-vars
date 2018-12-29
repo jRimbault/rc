@@ -19,7 +19,7 @@ get_excludes()
 
 if command -v fd > /dev/null 2>&1; then
   FZF_DEFAULT_COMMAND="fd -t f -H -I $(get_excludes)"
-  alias search='eval $FZF_DEFAULT_COMMAND'
+  alias search="$FZF_DEFAULT_COMMAND"
   export FZF_DEFAULT_COMMAND
 fi
 

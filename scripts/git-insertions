@@ -33,23 +33,26 @@ class GitData:
         self.deletions = sum(deletions)
 
     def __repr__(self):
-        return "\n".join([
-            f"{self.author} on {self.branch}",
-            ", ".join([
-                f"{self.files} files changed",
-                f"{self.insertions} insertions(+)",
-                f"{self.deletions} deletions(-)",
-            ])
-        ])
+        return "\n".join(
+            [
+                f"{self.author} on {self.branch}",
+                ", ".join(
+                    [
+                        f"{self.files} files changed",
+                        f"{self.insertions} insertions(+)",
+                        f"{self.deletions} deletions(-)",
+                    ]
+                ),
+            ]
+        )
 
     def to_csv_line(self):
-        return ";".join(map(str, [
-            self.files,
-            self.insertions,
-            self.deletions,
-            self.author,
-            self.branch
-        ]))
+        return ";".join(
+            map(
+                str,
+                [self.files, self.insertions, self.deletions, self.author, self.branch],
+            )
+        )
 
 
 def git_stats(author, branch="master"):
@@ -67,8 +70,10 @@ if __name__ == "__main__":
     parser.add_argument("author")
     parser.add_argument("branch", nargs="?", default=git_current_branch())
     parser.add_argument(
-        "--csv", "-c", action="store_true",
-        help="files;insertions;deletions;author;branch"
+        "--csv",
+        "-c",
+        action="store_true",
+        help="files;insertions;deletions;author;branch",
     )
     try:
         sys.exit(main(parser.parse_args()))

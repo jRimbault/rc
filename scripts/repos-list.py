@@ -12,7 +12,7 @@ def main(args):
 
 def user_repos(user):
     repos = f"https://api.github.com/users/{user}/repos"
-    return (r["name"] for r in get(repos))
+    return (repo["name"] for repo in get(repos))
 
 
 def get(url):
