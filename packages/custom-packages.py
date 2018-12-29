@@ -10,6 +10,11 @@ import tempfile
 from urllib.request import urlopen
 
 
+def main():
+    package_fzf()
+    package_clustergit()
+
+
 def get(url):
     r = urlopen(url)
     return json.loads(r.read())
@@ -74,11 +79,19 @@ def package_fzf():
         shutil.move(os.path.join(tmpdir, binary), dest)
 
     os.chmod(dest, 0o744)
-    print("fzf installed to", dest)
+    print(binary, "installed to", dest)
 
 
-def main():
-    package_fzf()
+def package_clustergit():
+    script_url = (
+        r"https://raw.githubusercontent.com/mnagel/clustergit/master/clustergit"
+    )
+    binary = "clustergit"
+    dest = os.path.join(local_bin_dir(), binary)
+    with open(dest, "wb") as f:
+        f.write(download_with_progress(script_url))
+    os.chmod(dest, 0o744)
+    print(binary, "installed to", dest)
 
 
 if __name__ == "__main__":
