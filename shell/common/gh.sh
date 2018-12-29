@@ -63,13 +63,18 @@ gh()
   GH_BASE_DIR=${GH_BASE_DIR:-"$HOME/github.com"}
   GH_PROTO=${GH_PROTO:-"ssh"}
 
-  if [[ $# -ne 2 ]]; then
+  if [[ $# -lt 1 ]]; then
     echo "USAGE: gh [user] [repo]"
     return
   fi
 
   user="$1"
-  repo="$2"
+
+  if [[ $# -eq 1 ]]; then
+    repo="$(repos-list.py "$user" | fzf)"
+  else
+    repo="$2"
+  fi
 
   __proto_gh "$user" "$repo" "github.com" "$GH_BASE_DIR" "$GH_PROTO"
 }
