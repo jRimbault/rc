@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+vol=$(pamixer --get-volume)
+amount=$(((100 - vol) /2))
+
+wallpaper=/home/erelde/Pictures/Wallpapers/02001.png
+converted=$wallpaper
+current=/tmp/wallpaper.current
+
+echo $converted > $current
+
+if [[ ! -f $converted ]]; then
+    convert_cmd="convert $wallpaper"
+
+    convert_cmd=$convert_cmd" -fill blue -colorize $amount"
+    convert_cmd=$convert_cmd" -fill black -colorize $amount"
+
+    $convert_cmd $converted
+fi
+
+feh --bg-fill $converted
+
