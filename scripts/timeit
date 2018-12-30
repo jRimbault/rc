@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+time_it.py $* | tail -1

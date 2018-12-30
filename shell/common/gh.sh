@@ -71,7 +71,7 @@ gh()
   user="$1"
 
   if [[ $# -eq 1 ]]; then
-    repo="$(repos-list.py "$user" | fzf)"
+    repo="$(github-repos "$user" | fzf)"
   else
     repo="$2"
   fi
