@@ -8,26 +8,66 @@ from urllib.request import urlopen, Request
 
 
 def main(args):
-    print("\n".join(user_repos(args.user)))
-
-
-def user_repos(user):
-    repos = f"https://api.github.com/users/{user}/repos"
-    return (repo["name"] for repo in api_get(repos))
-
-
-def api_get(url):
-    r = Request(url)
-    if "GITHUB_API_TOKEN" in os.environ:
-        token = os.environ["GITHUB_API_TOKEN"]
-        r.add_header("Authorization", f"token {token}")
-    return json.loads(urlopen(r).read())
+    for repo in get_all_repos(args.user):
+        print(repo)
 
 
 def args(argv=sys.argv[1:]):
     p = argparse.ArgumentParser(description="Get the user's public repos")
     p.add_argument("user")
     return p.parse_args(argv)
+
+
+def get_all_repos(user):
+    result = GraphQlRepos(graphql(query(user)))
+    yield from result.repos
+    while result.hasNextPage:
+        result = GraphQlRepos(graphql(query(user, result.endCursor)))
+        yield from result.repos
+
+
+class GraphQlRepos:
+    def __init__(self, data):
+        self._data = data["user"]["repositories"]
+
+    def _nodes(self):
+        return self._data["nodes"]
+
+    @property
+    def hasNextPage(self):
+        return self._data["pageInfo"]["hasNextPage"]
+
+    @property
+    def endCursor(self):
+        return self._data["pageInfo"]["endCursor"]
+
+    @property
+    def repos(self):
+        return (node["name"] for node in self._nodes())
+
+
+def graphql(query):
+    data = json.dumps({"query": query})
+    r = Request("https://api.github.com/graphql")
+    r.add_header("Content-Type", "application/json; charset=utf-8")
+    r.add_header("Content-Length", len(data))
+    if "GITHUB_API_TOKEN" in os.environ:
+        token = os.environ["GITHUB_API_TOKEN"]
+        r.add_header("Authorization", f"token {token}")
+
+    return json.loads(urlopen(r, data.encode("utf-8")).read())["data"]
+
+
+def query(user, cursor=None):
+    if cursor == None:
+        return (
+            '{user(login: "%s") {repositories(first: 30, orderBy: {field: NAME, direction: ASC}) {nodes {name} pageInfo {hasNextPage endCursor}}}}'
+            % user
+        )
+    return (
+        '{user(login: "%s") {repositories(first: 30, orderBy: {field: NAME, direction: ASC}, after: "%s") {nodes {name} pageInfo {hasNextPage endCursor}}}}'
+        % (user, cursor)
+    )
 
 
 if __name__ == "__main__":
