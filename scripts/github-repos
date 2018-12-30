@@ -19,10 +19,26 @@ def args(argv=sys.argv[1:]):
 
 
 def get_all_repos(user):
-    result = GraphQlRepos(graphql(query(user)))
+    repos = query_api(
+        """
+query ($user: String!, $cursor: String) {
+ user(login: $user) {
+  repositories(ownerAffiliations: OWNER, first: 30, orderBy: {field: NAME, direction: ASC}, after: $cursor) {
+   nodes {
+    name
+   }
+   pageInfo {
+    hasNextPage
+    endCursor
+   }
+  }
+ }
+}"""
+    )
+    result = GraphQlRepos(repos({"user": user}))
     yield from result.repos
     while result.hasNextPage:
-        result = GraphQlRepos(graphql(query(user, result.endCursor)))
+        result = GraphQlRepos(repos({"user": user, "cursor": result.endCursor}))
         yield from result.repos
 
 
@@ -46,28 +62,23 @@ class GraphQlRepos:
         return (node["name"] for node in self._nodes())
 
 
-def graphql(query):
-    data = json.dumps({"query": query})
-    r = Request("https://api.github.com/graphql")
-    r.add_header("Content-Type", "application/json; charset=utf-8")
-    r.add_header("Content-Length", len(data))
+def query_api(query):
+    def do_query(variables=None):
+        data = json.dumps({"query": query, "variables": variables})
+        return request_graph_body(request, data)
+
+    request = Request("https://api.github.com/graphql")
+    request.add_header("Content-Type", "application/json; charset=utf-8")
     if "GITHUB_API_TOKEN" in os.environ:
         token = os.environ["GITHUB_API_TOKEN"]
-        r.add_header("Authorization", f"token {token}")
+        request.add_header("Authorization", f"token {token}")
 
-    return json.loads(urlopen(r, data.encode("utf-8")).read())["data"]
+    return do_query
 
 
-def query(user, cursor=None):
-    if cursor == None:
-        return (
-            '{user(login: "%s") {repositories(first: 30, orderBy: {field: NAME, direction: ASC}) {nodes {name} pageInfo {hasNextPage endCursor}}}}'
-            % user
-        )
-    return (
-        '{user(login: "%s") {repositories(first: 30, orderBy: {field: NAME, direction: ASC}, after: "%s") {nodes {name} pageInfo {hasNextPage endCursor}}}}'
-        % (user, cursor)
-    )
+def request_graph_body(request, data):
+    request.add_header("Content-Length", len(data))
+    return json.loads(urlopen(request, data.encode("utf-8")).read())["data"]
 
 
 if __name__ == "__main__":
