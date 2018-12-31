@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+
+log()
+{
+  git log-pretty
+}
+
+fzf_preview()
+{
+  fzf --ansi --preview="git -c color.ui=always show {+2} --stat"
+}
+
+
+log | fzf_preview | cut -d ' ' -f 2
