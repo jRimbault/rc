@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+
+fzf_preview()
+{
+  local bat_cmd
+  bat_cmd="bat --color always --theme OneHalfDark --plain"
+  fzf --ansi --preview="$bat_cmd {}"
+}
+
+loop()
+{
+  local file
+  while true; do
+    file=$(fzf_preview)
+    if [ $? != 0 ]; then
+      exit 0
+    fi
+    vi "$file"
+  done
+}
+
+loop
