@@ -1,17 +1,34 @@
 #!/usr/bin/env bash
 
 
-log()
+git:log()
 {
   git -c color.ui=always log --oneline
 }
 
-fzf_preview()
+fzf:preview()
 {
   local git_cmd
   git_cmd="git -c color.ui=always show --stat"
   fzf --ansi --no-mouse --preview="$git_cmd {+1}"
 }
 
+select:commit()
+{
+  git:log | fzf:preview | cut -d ' ' -f 1
+}
 
-log | fzf_preview | cut -d ' ' -f 1
+main()
+{
+  local commit
+  LESS="-R -X -C"
+  while true; do
+    commit=$(select:commit)
+    if [ "$commit" == "" ]; then
+      exit 0
+    fi
+    git show "$commit"
+  done
+}
+
+main
