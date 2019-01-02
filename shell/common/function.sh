@@ -175,7 +175,7 @@ goto_project()
   cd "$base_dir/$dest" || return 1
 }
 
-pv()
+pvi()
 {
   goto_project
   vp
