@@ -175,6 +175,12 @@ goto_project()
   cd "$base_dir/$dest" || return 1
 }
 
+pv()
+{
+  goto_project
+  vp
+}
+
 # show the last 10 commits
 git_log_pager_short()
 {

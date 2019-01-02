@@ -3,13 +3,15 @@
 
 log()
 {
-  git log-pretty
+  git -c color.ui=always log --oneline
 }
 
 fzf_preview()
 {
-  fzf --ansi --preview="git -c color.ui=always show {+2} --stat"
+  local git_cmd
+  git_cmd="git -c color.ui=always show --stat"
+  fzf --ansi --no-mouse --preview="$git_cmd {+1}"
 }
 
 
-log | fzf_preview | cut -d ' ' -f 2
+log | fzf_preview | cut -d ' ' -f 1
