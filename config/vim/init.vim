@@ -184,7 +184,6 @@ function! ToggleAll()
     call ToggleStatusLine()
     call ToggleWhiteSpace()
     call HighlightCurrentLine()
-    call ToggleRuler()
 endfunction
 nnoremap ,ta :call ToggleAll() <cr>
 
