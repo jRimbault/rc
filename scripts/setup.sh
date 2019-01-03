@@ -10,6 +10,9 @@ setup_scripts()
   echo "Installing scripts"
   mkdir -p "$HOME/.bin"
   for script in "$DIR"/*; do
+    if [ -d "$script" ]; then
+      continue
+    fi
     soft_force_symlink "$script" "$HOME/.bin/$(basename "$script")"
   done
   rm "$HOME/.bin/$(basename "$0")"
