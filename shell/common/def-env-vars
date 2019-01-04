@@ -6,6 +6,7 @@ get_excludes()
 {
   local excludes ret
   excludes=(
+    "target"
     ".vs"
     ".vscode"
     ".git"
