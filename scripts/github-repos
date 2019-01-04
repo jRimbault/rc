@@ -27,7 +27,7 @@ async def get_all_repos(user):
             self.endCursor = self.data["pageInfo"]["endCursor"]
 
         def repos(self):
-            return (node["name"] for node in self.data["nodes"])
+            yield from (node["name"] for node in self.data["nodes"])
 
     repos = query_api(
         Graph,
