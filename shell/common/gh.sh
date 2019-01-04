@@ -71,7 +71,7 @@ gh()
   user="$1"
 
   if [[ $# -eq 1 ]]; then
-    repo="$(github-repos "$user" | fzf)"
+    repo="$(github-repos "$user" | fzf | cut -d' ' -f1)"
   else
     repo="$2"
   fi

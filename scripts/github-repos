@@ -10,7 +10,7 @@ from urllib.request import Request, urlopen
 
 async def main(args):
     async for repos in get_all_repos(args.user):
-        print("\n".join(repos))
+        print("\n".join(map(str, repos)))
 
 
 def args(argv=sys.argv[1:]):
@@ -20,6 +20,16 @@ def args(argv=sys.argv[1:]):
 
 
 async def get_all_repos(user):
+    class Repo:
+        def __init__(self, name, description):
+            self.name = name
+            if description is None:
+                description = ""
+            self.description = description
+
+        def __repr__(self):
+            return f"{self.name:<30} {self.description[0:89]}"  # limit to 120 columns
+
     class Graph:
         def __init__(self, data):
             self.data = data["data"]["user"]["repositories"]
@@ -27,7 +37,9 @@ async def get_all_repos(user):
             self.endCursor = self.data["pageInfo"]["endCursor"]
 
         def repos(self):
-            yield from (node["name"] for node in self.data["nodes"])
+            yield from map(
+                lambda n: Repo(n["name"], n["description"]), self.data["nodes"]
+            )
 
     repos = query_api(
         Graph,
@@ -36,6 +48,7 @@ async def get_all_repos(user):
   repositories(ownerAffiliations: OWNER, first: 30, after: $cursor) {
    nodes {
     name
+    description
    }
    pageInfo {
     hasNextPage
@@ -47,10 +60,10 @@ async def get_all_repos(user):
     )
 
     graph = await repos({"user": user})
-    yield (r for r in graph.repos())
+    yield graph.repos()
     while graph.hasNextPage:
         graph = await repos({"user": user, "cursor": graph.endCursor})
-        yield (r for r in graph.repos())
+        yield graph.repos()
 
 
 def query_api(callable_type, query):
