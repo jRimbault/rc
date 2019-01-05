@@ -1,7 +1,13 @@
+build-essential
+cmatrix
 curl
+feh
+fonts-hack-ttf
 fzy
 git
 htop
+libcurl4-openssl-dev
+libssl-dev
 lnav
 make
 mpv
@@ -11,7 +17,9 @@ python3
 python3-pip
 rsync
 shellcheck
+tig
 tree
 vim
 wget
+zlib1g-dev
 zsh
