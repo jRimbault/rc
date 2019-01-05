@@ -91,3 +91,20 @@ gh()
 #   base_dir=/path/to/base/dir
 #   __proto_gh "User" "$1" "your.git.url.com" "$base_dir" "ssh"
 # }
+
+bb()
+{
+  local user repo base_dir dir
+  user="$1"
+  repo="$2"
+  base_dir=${BB_BASE_DIR:-"$HOME/Documents"}
+  dir="$base_dir/bitbucket.org/$user"
+  if [ ! -n "$repo" ]; then
+    repo="$(bitbucket-repos "$user" | fzf)"
+  fi
+  mkdir -p "$dir"
+  if [ ! -d "$dir/$repo" ]; then
+    git clone "https://bitbucket.org/$user/$repo.git" "$dir/$repo"
+  fi
+  cd "$dir/$repo" || return $?
+}

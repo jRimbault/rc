@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+import json
+import sys
+from urllib.request import urlopen
+
+
+def get(url):
+    return json.loads(urlopen(url).read())
+
+
+def names(data):
+    yield from (repo["name"] for repo in data)
+
+
+def pprint(names):
+    print("\n".join(names))
+
+
+if __name__ == "__main__":
+    pprint(
+        names(
+            get(f"https://api.bitbucket.org/2.0/repositories/{sys.argv[1]}")["values"]
+        )
+    )
+
+"""
+bb()
+{
+  local user repo base_dir dir
+  user="$1"
+  repo="$2"
+  base_dir=${BB_BASE_DIR:-"$HOME/Documents"}
+  dir="$base_dir/bitbucket.org/$user"
+  if [ ! -n "$repo" ]; then
+    repo="$(bitbucket-repos "$user" | fzf)"
+  fi
+  mkdir -p "$dir"
+  if [ ! -d "$dir/$repo" ]; then
+    git clone "https://bitbucket.org/$user/$repo.git" "$dir/$repo"
+  fi
+  cd "$dir/$repo" || return $?
+}
+"""
