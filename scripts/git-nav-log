@@ -21,7 +21,8 @@ select:commit()
 main()
 {
   local commit
-  LESS="-R -X -C"
+  # shellcheck disable=2034
+  LESS="-R -X -C"  # each diff should clear the pager before displaying
   while true; do
     commit=$(select:commit)
     if [ "$commit" == "" ]; then

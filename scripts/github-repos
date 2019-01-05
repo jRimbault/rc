@@ -9,8 +9,8 @@ from urllib.request import Request, urlopen
 
 
 async def main(args):
-    async for repos in get_all_repos(args.user):
-        print("\n".join(map(str, repos)))
+    repos = await get_all_repos(args.user)
+    print("\n".join(map(str, repos)))
 
 
 def args(argv=sys.argv[1:]):
@@ -19,16 +19,26 @@ def args(argv=sys.argv[1:]):
     return p.parse_args(argv)
 
 
+def unroll(func):
+    async def _(*args, **kwargs):
+        l = []
+        async for el in func(*args, **kwargs):
+            l.extend(el)
+        return l
+    return _
+
+
+@unroll
 async def get_all_repos(user):
     class Repo:
         def __init__(self, node):
             self.name = node["name"]
-            self.description = (
-                "" if node["description"] is None else node["description"]
-            )
+            self.description = node["description"]
 
         def __repr__(self):
-            return f"{self.name:<30} {self.description[0:89]}"  # limit to 120 columns
+            if self.description is not None:
+                return f"{self.name:<30} {self.description[0:89]}"  # limit to 120 columns
+            return self.name
 
     class Graph:
         def __init__(self, data):
