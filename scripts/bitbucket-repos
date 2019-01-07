@@ -23,22 +23,3 @@ if __name__ == "__main__":
             get(f"https://api.bitbucket.org/2.0/repositories/{sys.argv[1]}")["values"]
         )
     )
-
-"""
-bb()
-{
-  local user repo base_dir dir
-  user="$1"
-  repo="$2"
-  base_dir=${BB_BASE_DIR:-"$HOME/Documents"}
-  dir="$base_dir/bitbucket.org/$user"
-  if [ ! -n "$repo" ]; then
-    repo="$(bitbucket-repos "$user" | fzf)"
-  fi
-  mkdir -p "$dir"
-  if [ ! -d "$dir/$repo" ]; then
-    git clone "https://bitbucket.org/$user/$repo.git" "$dir/$repo"
-  fi
-  cd "$dir/$repo" || return $?
-}
-"""

@@ -94,17 +94,23 @@ gh()
 
 bb()
 {
-  local user repo base_dir dir
+  local user repo base_dir proto
+
+  base_dir=${BB_BASE_DIR:-"$HOME/Documents/bitbucket.org"}
+  proto=${GH_PROTO:-"ssh"}
+
+  if [[ $# -lt 1 ]]; then
+    echo "USAGE: bb [user] [repo]"
+    return
+  fi
+
   user="$1"
-  repo="$2"
-  base_dir=${BB_BASE_DIR:-"$HOME/Documents"}
-  dir="$base_dir/bitbucket.org/$user"
-  if [ ! -n "$repo" ]; then
+
+  if [[ $# -eq 1 ]]; then
     repo="$(bitbucket-repos "$user" | fzf)"
+  else
+    repo="$2"
   fi
-  mkdir -p "$dir"
-  if [ ! -d "$dir/$repo" ]; then
-    git clone "https://bitbucket.org/$user/$repo.git" "$dir/$repo"
-  fi
-  cd "$dir/$repo" || return $?
+
+  __proto_gh "$user" "$repo" "bitbucket.org" "$base_dir" "$proto"
 }
