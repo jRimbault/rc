@@ -8,7 +8,7 @@
 #   https://github.com/garybernhardt/dotfiles
 #
 # Example usage:
-#   $ git recurse origin/master master 'python runtests.py'
+#   $ git recurse 'python runtests.py' origin/master master
 
 set -e
 
@@ -17,9 +17,9 @@ if [[ $1 == -v ]]; then
   shift
 fi
 
-start_ref=$1
-end_ref=$2
-test_command=$3
+test_command="$1"
+start_ref="${2:-"HEAD~2"}"
+end_ref="${3:-"$(git rev-parse --abbrev-ref HEAD)"}"
 
 main()
 {
@@ -57,7 +57,7 @@ enforce_usage()
 
 usage()
 {
-  echo "usage: $(basename "$0") start_ref end_ref test_command"
+  echo "usage: $(basename "$0") 'test_command' [start_ref] [end_ref]"
 }
 
 run_tests()
@@ -68,6 +68,7 @@ run_tests()
   for rev in $revs; do
     debug "Checking out: $(git log --oneline -1 "$rev")"
     log_command git checkout --quiet "$rev"
+    git log HEAD --oneline --no-walk
     log_command "$test_command"
     log_command git reset --hard --quiet
   done

@@ -82,7 +82,7 @@ lock_xkcd()
 
 lock_new()
 {
-  overlay="$scriptpath/ressources/overlay.png"
+  overlay="$BSWPM_BG_LOCK"
   build_lockscreen
   # rrggbbaa format, channels: red, green, blue, alpha
   declare -ra params=(

@@ -156,12 +156,12 @@ find_git_repos()
   if command -v fd > /dev/null 2>&1; then
     fd .git "$1" -HI -t d |
       __remove_trailing_dotgit |
-      __remove_base_dir "$1/"
+      __remove_base_dir "$1/" | uniq
     return $?
   fi
   find "$1" -name .git -type d -prune |
     __remove_trailing_dotgit |
-    __remove_base_dir "$1/"
+    __remove_base_dir "$1/" | uniq
 }
 
 # fuzzy projects finder
@@ -221,4 +221,13 @@ strikethrough() { echo -e "\e[9m$*\e[0m"; }
 padfortune()
 {
   italic "$(fortune -a $* | sed -e 's/^/    /g')"
+}
+
+gm()
+{
+  if [ -d .git ]; then
+    /usr/bin/git $*
+  else
+   p && /usr/bin/git $*
+  fi
 }

@@ -41,6 +41,7 @@ alias gst='git status'
 alias gwch='git whatchanged -p --abbrev-commit --pretty=medium'
 alias gfb='git branch | cut -c 3- | fzf'
 alias fco='gfb | xargs git checkout'
+alias gcurrent='git rev-parse HEAD'
 
 # python
 alias pip='python3 -m pip' # debian has/had a packaging issue with pip
