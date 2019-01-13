@@ -1,4 +1,5 @@
 bat
 fd-find
+hyperfine
 ripgrep
 tokei
