@@ -1,30 +1,50 @@
 #!/usr/bin/env bash
-
-if [ $# -lt 1 ]; then
+#/ install a python executable with pip in a virtualenv
+#/ and writes a wrapper script to make it available globally
+usage()
+{
   echo "usage: $(basename "$0") package [executable]"
-  exit 1
-fi
-
-package="$1"
-executable="$package"
-if [ $# -ge 2 ]; then
-  executable="$2"
-fi
+  grep "^#/" "$0" | cut -c4-
+  exit 0
+}
 
 base_path="$HOME/.venv"
 
-python3 -m venv "$base_path/$package"
-source "$base_path/$package/bin/activate"
-pip install "$package"
+main()
+{
+  local package executable
+  package="$1"
+  executable=${2:-"$package"}
+  make_virtualenv "$package"
+  write_wrapper "$package" "$executable"
+}
 
+make_virtualenv()
+{
+  local package
+  package="$1"
+  python3 -m venv "$base_path/$package"
+  source "$base_path/$package/bin/activate"
+  pip install "$package"
+}
 
-read -r -d '' script << WRAPPER_SCRIPT
+write_wrapper()
+{
+  local executable package
+  package="$1"
+  executable="$2"
+  cat > "$HOME/.local/bin/$executable" <<- WRAPPER_SCRIPT
 #!/usr/bin/env bash
 
 source "$base_path/$package/bin/activate"
-eval "$base_path/$package/bin/$executable \$*"
+$base_path/$package/bin/$executable \$*
 WRAPPER_SCRIPT
+}
 
-wrapper="$HOME/.local/bin/$executable"
-echo "$script" > "$wrapper"
-chmod 744 "$wrapper"
+
+if [[ "${BASH_SOURCE[0]}" = "$0" ]]; then
+  if [ $# -lt 1 ]; then
+    usage
+  fi
+  main "$@"
+fi
