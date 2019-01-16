@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+if [ $# -lt 1 ]; then
+  echo "usage: $(basename "$0") package [executable]"
+  exit 1
+fi
+
+package="$1"
+executable="$package"
+if [ $# -ge 2 ]; then
+  executable="$2"
+fi
+
+base_path="$HOME/.venv"
+
+python3 -m venv "$base_path/$package"
+source "$base_path/$package/bin/activate"
+pip install "$package"
+
+
+read -r -d '' script << WRAPPER_SCRIPT
+#!/usr/bin/env bash
+
+source "$base_path/$package/bin/activate"
+eval "$base_path/$package/bin/$executable \$*"
+WRAPPER_SCRIPT
+
+wrapper="$HOME/.local/bin/$executable"
+echo "$script" > "$wrapper"
+chmod 744 "$wrapper"
