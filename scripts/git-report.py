@@ -25,7 +25,10 @@ def check_output(command):
 def collect_stats(authors):
     reporter = status(len(authors))
     for i, author in enumerate(authors):
-        yield check_output(("git-insertions", author)).strip()
+        try:
+            yield check_output(("git-insertions", author)).strip()
+        except subprocess.CalledProcessError:
+            continue
         reporter(i)
     print("\nDone.", file=sys.stderr)
 
