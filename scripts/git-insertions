@@ -6,21 +6,20 @@ import sys
 
 
 def main(args):
-    data = GitData(args.author, args.branch)
-    data.parse(git_stats(data.author, data.branch))
-    if args.csv or not sys.stdout.isatty():
-        print(data.to_csv_line())
+    data = GitData(args.author, args.branch, git_stats)
+    if args.readable or not sys.stdout.isatty():
+        print(data.machine_readable())
     else:
         print(data)
-    return 0
 
 
 class GitData:
-    def __init__(self, author, branch):
+    def __init__(self, author, branch, stats):
         self.author = author
         self.branch = branch
+        self._parse_text(stats(author, branch))
 
-    def parse(self, text):
+    def _parse_text(self, text):
         value = lambda l, i: int(l[i]) if len(l) > i else 0
         files, insertions, deletions = [], [], []
         for line in text.split("\n"):
@@ -33,26 +32,15 @@ class GitData:
         self.deletions = sum(deletions)
 
     def __repr__(self):
-        return "\n".join(
-            [
-                f"{self.author} on {self.branch}",
-                ", ".join(
-                    [
-                        f"{self.files} files changed",
-                        f"{self.insertions} insertions(+)",
-                        f"{self.deletions} deletions(-)",
-                    ]
-                ),
-            ]
+        return (
+            f"{self.author} on {self.branch}\n"
+            + f"{self.files} files changed, "
+            + f"{self.insertions} insertions(+), "
+            + f"{self.deletions} deletions(-)"
         )
 
-    def to_csv_line(self):
-        return ";".join(
-            map(
-                str,
-                [self.files, self.insertions, self.deletions, self.author, self.branch],
-            )
-        )
+    def machine_readable(self):
+        return f"{self.files};{self.insertions};{self.deletions};{self.author};{self.branch}"
 
 
 def git_stats(author, branch="master"):
@@ -65,17 +53,18 @@ def git_current_branch():
     return subprocess.check_output(git, universal_newlines=True).strip()
 
 
-if __name__ == "__main__":
+def parse_args(argv):
     parser = argparse.ArgumentParser()
     parser.add_argument("author")
     parser.add_argument("branch", nargs="?", default=git_current_branch())
     parser.add_argument(
-        "--csv",
-        "-c",
-        action="store_true",
-        help="files;insertions;deletions;author;branch",
+        "--readable", "-r", action="store_true", help="machine readable format"
     )
+    return parser.parse_args(argv)
+
+
+if __name__ == "__main__":
     try:
-        sys.exit(main(parser.parse_args()))
+        sys.exit(main(parse_args(sys.argv[1:])))
     except KeyboardInterrupt:
         print()
