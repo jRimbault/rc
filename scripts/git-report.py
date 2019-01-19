@@ -1,10 +1,23 @@
 #!/usr/bin/env python3
 
 import argparse
-import os
 import subprocess
 import sys
 from contextlib import contextmanager
+
+try:
+    from tqdm import tqdm
+except ImportError:
+
+    def tqdm(iterable):
+        def report(i):
+            print(f"{i+1:>{formatter}}/{total}", file=sys.stderr, end="\r")
+
+        total = len(iterable)
+        formatter = len(str(total))
+        for i, el in enumerate(iterable):
+            yield el
+            report(i)
 
 
 def main(args):
@@ -23,22 +36,12 @@ def check_output(command):
 
 
 def collect_stats(authors):
-    reporter = status(len(authors))
-    for i, author in enumerate(authors):
+    for author in tqdm(authors):
         try:
             yield check_output(("git-insertions", author)).strip()
         except subprocess.CalledProcessError:
             continue
-        reporter(i)
-    print("\nDone.", file=sys.stderr)
-
-
-def status(total):
-    def report(i):
-        print(f"{i+1:>{formatter}}/{total}", file=sys.stderr, end="\r")
-
-    formatter = len(str(total))
-    return report
+    print("Done.", file=sys.stderr)
 
 
 def git_authors():

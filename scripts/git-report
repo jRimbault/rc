@@ -2,11 +2,7 @@
 # when piped this will output a csv
 # else it will be presented as a table
 
-if [ -t 1 ]; then
-  if [ "$*" != "" ]; then
-    git-report.py $*
-    exit $?
-  fi
+if [ -t 1 ] && [ "$*" == "" ]; then
   git-report.py | sort -h | column -s ';' -t
 else
   git-report.py $*
