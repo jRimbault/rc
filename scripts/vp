@@ -11,11 +11,7 @@ fzf_preview()
 loop()
 {
   local file
-  while true; do
-    file=$(fzf_preview)
-    if [ $? != 0 ]; then
-      exit 0
-    fi
+  while file=$(fzf_preview); do
     vi "$file"
   done
 }
