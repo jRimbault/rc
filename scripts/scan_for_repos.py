@@ -124,8 +124,7 @@ def find_repos(base_dir):
 def parse_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument(
-        "-d",
-        "--dir",
+        "dir",
         help="directory to parse sub dirs from. (default: .)",
         default=".",
     )

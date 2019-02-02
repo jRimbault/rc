@@ -154,7 +154,7 @@ __remove_base_dir()
 find_git_repos()
 {
   if command -v scan_for_repos.py > /dev/null 2>&1; then
-    scan_for_repos.py -d "$1"
+    scan_for_repos.py "$1"
     return $?
   fi
   if command -v clustergit > /dev/null 2>&1; then
