@@ -153,6 +153,10 @@ __remove_base_dir()
 # you really can't beat sed
 find_git_repos()
 {
+  if command -v scan_for_repos.py > /dev/null 2>&1; then
+    scan_for_repos.py -d "$1"
+    return $?
+  fi
   if command -v clustergit > /dev/null 2>&1; then
     clustergit --recursive --relative --align 50 --quiet --dir "$1"
     return $?
