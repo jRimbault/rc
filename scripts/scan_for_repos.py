@@ -1,17 +1,34 @@
 #!/usr/bin/env python3
 
 import argparse
+import asyncio
 import glob
 import os
 import re
 import subprocess
 import sys
+from functools import wraps
+
+LOOP = asyncio.get_event_loop()
 
 
-def main(args, argv):
-    for repo in find_repos(args.dir):
-        status = get_repo_status(os.path.join(args.dir, repo))
-        print(f"{repo:<50}: {status}", flush=True)
+async def main(args, argv):
+    tasks = [show_repos(args.dir, repo) for repo in find_repos(args.dir)]
+    for task in tasks:
+        print(await task, flush=True)
+
+
+async def show_repos(base_dir, repo):
+    status = await get_repo_status(os.path.join(base_dir, repo))
+    return f"{repo:<50}: {status}"
+
+
+def async_t(func):
+    @wraps(func)
+    def threaded_executor(*args):
+        return LOOP.run_in_executor(None, func, *args)
+
+    return threaded_executor
 
 
 class Colors:
@@ -45,18 +62,6 @@ def colorize(color, message):
     return "%s%s%s" % (color, message, Colors.ENDC)
 
 
-def run(command):
-    try:
-        output = subprocess.check_output(command)
-        if isinstance(output, bytes):
-            output = output.decode("utf-8")
-        return output
-    except subprocess.CalledProcessError as e:
-        if isinstance(e.output, bytes):
-            e.output = e.output.decode("utf-8")
-        return e.output
-
-
 def message(out):
     messages = []
     clean = True
@@ -86,12 +91,25 @@ def message(out):
     return ", ".join(messages)
 
 
+@async_t
 def get_repo_status(repo):
     gitdir = os.path.join(repo, ".git")
     command = ["git", "--git-dir", gitdir, "--work-tree", repo, "status"]
     out = run(command)
 
     return message(out)
+
+
+def run(command):
+    try:
+        output = subprocess.check_output(command)
+        if isinstance(output, bytes):
+            output = output.decode("utf-8")
+        return output
+    except subprocess.CalledProcessError as e:
+        if isinstance(e.output, bytes):
+            e.output = e.output.decode("utf-8")
+        return e.output
 
 
 def find_repos(base_dir):
@@ -115,4 +133,4 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    main(*parse_args(sys.argv[1:]))
+    LOOP.run_until_complete(main(*parse_args(sys.argv[1:])))
