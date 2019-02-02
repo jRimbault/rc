@@ -9,7 +9,7 @@ from urllib.request import Request, urlopen
 
 def main(args):
     for repos in get_all_repos(args.user):
-        print(repos)
+        print(repos, flush=True)
 
 
 def parse_args(argv=sys.argv[1:]):
