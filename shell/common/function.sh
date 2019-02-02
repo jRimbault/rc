@@ -153,6 +153,10 @@ __remove_base_dir()
 # you really can't beat sed
 find_git_repos()
 {
+  if command -v clustergit > /dev/null 2>&1; then
+    clustergit --recursive --relative --align 50 --quiet --dir "$1"
+    return $?
+  fi
   if command -v fd > /dev/null 2>&1; then
     fd .git "$1" -HI -t d |
       __remove_trailing_dotgit |
@@ -170,7 +174,7 @@ goto_project()
   local dest base_dir
   GH_BASE_DIR=${GH_BASE_DIR:-"$HOME/Documents"}
   base_dir="$(dirname "$GH_BASE_DIR")"
-  dest=$(find_git_repos "$base_dir" | fzf)
+  dest="$(find_git_repos "$base_dir" | fzf --ansi | cut -d: -f1 | cut -d\  -f1)"
   [ -z "$dest" ] && return 0
   cd "$base_dir/$dest" || return 1
 }
