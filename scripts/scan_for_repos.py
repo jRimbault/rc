@@ -14,14 +14,21 @@ LOOP = asyncio.get_event_loop()
 
 async def main(args, argv):
     def clean(filename):
-        return filename[len(args.dir):].strip("/")
+        if args.absolute:
+            return filename
+        return filename[len(args.dir) :].strip("/")
+
+    def max_padding(repos):
+        if args.absolute:
+            return max(map(len, repos)) + 1
+        return max(map(len, repos)) - len(args.dir)
 
     repos = find_repos(args.dir)
     if not args.status:
         print(*[clean(repo) for repo in repos], sep="\n")
         return
 
-    padding = max(map(len, repos)) - len(args.dir)
+    padding = max_padding(repos)
     async for repo, status in repos_statuses(repos):
         print(f"{clean(repo):<{padding}}: {status}", flush=True)
 
@@ -120,6 +127,9 @@ def parse_args(argv):
     p.add_argument("dir", help="directory to parse sub dirs from")
     p.add_argument(
         "-s", "--status", help="fetch repository status", action="store_true"
+    )
+    p.add_argument(
+        "-A", "--absolute", help="display absolute paths", action="store_true"
     )
     return p.parse_known_args(argv)
 
