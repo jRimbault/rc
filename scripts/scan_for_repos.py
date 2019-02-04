@@ -23,28 +23,34 @@ async def main(args, argv):
             return max(map(len, repos)) + 1
         return max(map(len, repos)) - len(args.dir)
 
-    repos = find_repos(args.dir)
-    if not args.status:
-        print(*[clean(repo) for repo in repos], sep="\n")
-        return
+    async def loop(method):
+        async for repo, status in method(repos):
+            print(f"{clean(repo):<{padding}}: {status}", flush=True)
 
+    repos = find_repos(args.dir)
     padding = max_padding(repos)
-    async for repo, status in repos_statuses(repos):
-        print(f"{clean(repo):<{padding}}: {status}", flush=True)
+
+    if args.status:
+        await loop(repos_statuses)
+    elif args.fetch:
+        await loop(repos_fetch)
+    else:
+        print(*[clean(repo) for repo in repos], sep="\n")
 
 
 async def repos_statuses(repos):
     tasks = [git_repo(repo, "status") for repo in repos]
     for task in asyncio.as_completed(tasks):
-        repo, out = await task
+        _, repo, out = await task
         yield repo, status_message(out)
 
 
-async def repos_fetch_all(repos):
-    tasks = [git_repo(repo, ["fetch", "--all"]) for repo in repos]
+async def repos_fetch(repos):
+    tasks = [git_repo(repo, "fetch --all".split()) for repo in repos]
     for task in asyncio.as_completed(tasks):
-        repo, out = await task
-        yield repo, out[:5] + "..."
+        errcode, repo, out = await task
+        _, _, status = await git_repo(repo, "status")
+        yield repo, status_message(status) + ", " + fetch_message(errcode, out)
 
 
 def find_repos(base_dir):
@@ -65,7 +71,8 @@ def async_io(func):
 
 @async_io
 def git_repo(repo, command):
-    return repo, run_git_repo(os.path.join(repo), command)
+    status, out = run_git_repo(os.path.join(repo), command)
+    return status, repo, out
 
 
 def run_git_repo(repo, action):
@@ -75,6 +82,17 @@ def run_git_repo(repo, action):
     elif type(action) == str:
         command.append(action)
     return run(command)
+
+
+def fetch_message(errcode, out):
+    fetch = []
+    if "error: " in out:
+        fetch.append(colorize(Colors.FAIL, "Fetch fatal"))
+    else:
+        fetch.append(colorize(Colors.OKPURPLE, "Fetched"))
+    if errcode != 0:
+        fetch.append(colorize(Colors.FAIL, "Fetch unsuccessful"))
+    return ", ".join(fetch)
 
 
 def status_message(out):
@@ -123,22 +141,24 @@ def colorize(color, message):
 
 def run(command):
     try:
-        output = subprocess.check_output(command)
-        return output.decode("utf-8")
+        output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+        return 0, output.decode("utf-8")
     except subprocess.CalledProcessError as e:
-        return e.output.decode("utf-8")
+        return e.returncode, e.output.decode("utf-8")
 
 
 def parse_args(argv):
-    p = argparse.ArgumentParser()
-    p.add_argument("dir", help="directory to parse sub dirs from")
-    p.add_argument(
-        "-s", "--status", help="fetch repository status", action="store_true"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dir", help="directory to parse sub dirs from")
+    group = parser.add_mutually_exclusive_group()
+    group.add_argument(
+        "-s", "--status", help="show repository status", action="store_true"
     )
-    p.add_argument(
+    group.add_argument("-f", "--fetch", help="fetch from remote", action="store_true")
+    parser.add_argument(
         "-A", "--absolute", help="display absolute paths", action="store_true"
     )
-    return p.parse_known_args(argv)
+    return parser.parse_known_args(argv)
 
 
 if __name__ == "__main__":
