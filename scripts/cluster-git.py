@@ -62,11 +62,8 @@ def as_completed(method, iterable):
 
 
 def find_repos(base_dir):
-    def clean(filename):
-        return filename[:-4].rstrip("/")
-
     search_glob = os.path.join(base_dir, "**/.git")
-    return [clean(f) for f in glob.iglob(search_glob, recursive=True)]
+    return [f[:-5] for f in glob.glob(search_glob, recursive=True)]
 
 
 def async_io(func):
