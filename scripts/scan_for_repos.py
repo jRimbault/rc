@@ -40,6 +40,13 @@ async def repos_statuses(repos):
         yield repo, status_message(out)
 
 
+async def repos_fetch_all(repos):
+    tasks = [git_repo(repo, ["fetch", "--all"]) for repo in repos]
+    for task in asyncio.as_completed(tasks):
+        repo, out = await task
+        yield repo, out[:5] + "..."
+
+
 def find_repos(base_dir):
     def clean(filename):
         return filename[:-4].rstrip("/")
