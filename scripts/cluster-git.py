@@ -67,18 +67,22 @@ async def repos_fetch(repos):
 
 
 async def repos_pull(repos):
+    git_status = run_in_repo("status")
     git_pull = as_completed(git_repo("pull"))
     for task in git_pull(repos):
         out = "No action taken"
         _, repo, out = await task
-        yield repo, pull_message(out)
+        _, status = git_status(repo)
+        yield repo, status_message(status) + ", " + pull_message(out)
 
 
 async def repos_push(repos):
+    git_status = run_in_repo("status")
     git_push = as_completed(git_repo("push"))
     for task in git_push(repos):
         _, repo, out = await task
-        yield repo, push_message(out)
+        _, status = git_status(repo)
+        yield repo, status_message(status) + ", " + push_message(out)
 
 
 def as_completed(method):
