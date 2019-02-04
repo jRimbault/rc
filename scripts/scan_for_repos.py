@@ -162,4 +162,7 @@ def parse_args(argv):
 
 
 if __name__ == "__main__":
-    LOOP.run_until_complete(main(*parse_args(sys.argv[1:])))
+    try:
+        LOOP.run_until_complete(main(*parse_args(sys.argv[1:])))
+    except KeyboardInterrupt:
+        print()
