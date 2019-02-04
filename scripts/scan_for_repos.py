@@ -14,11 +14,15 @@ LOOP = asyncio.get_event_loop()
 
 async def main(args, argv):
     repos = find_repos(args.dir)
+    if not args.status:
+        print(*repos, sep="\n")
+        sys.exit(0)
+
     padding = len(max(repos, key=len)) + 2
-    tasks = [get_repo_status(args.dir, repo) for repo in repos]
+    tasks = [git_repo(args.dir, repo, "status") for repo in repos]
     for task in asyncio.as_completed(tasks):
-        repo, status = await task
-        print(f"{repo:<{padding}}: {status}", flush=True)
+        repo, out = await task
+        print(f"{repo:<{padding}}: {message(out)}", flush=True)
 
 
 def find_repos(base_dir):
@@ -38,10 +42,17 @@ def async_io(func):
 
 
 @async_io
-def get_repo_status(base_dir, repo):
+def git_repo(base_dir, repo, command):
     gitdir = os.path.join(base_dir, os.path.join(repo, ".git"))
-    command = f"git --git-dir {gitdir} --work-tree {os.path.join(base_dir, repo)} status".split()
-    return repo, message(run(command))
+    command = (
+        "git",
+        "--git-dir",
+        gitdir,
+        "--work-tree",
+        os.path.join(base_dir, repo),
+        command,
+    )
+    return repo, run(command)
 
 
 class Colors:
@@ -101,6 +112,9 @@ def run(command):
 def parse_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument("dir", help="directory to parse sub dirs from")
+    p.add_argument(
+        "-s", "--status", help="fetch repository status", action="store_true"
+    )
     return p.parse_known_args(argv)
 
 
