@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+""" run git commands on multiple git clones
+inspired by https://github.com/mnagel/clustergit """
+
 import argparse
 import asyncio
 import glob
@@ -161,7 +164,15 @@ def run(command):
 
 
 def parse_args(argv):
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(
+        description="""
+        {0} will scan through all subdirectories looking for a .git directory.
+        When it finds one it'll look to see if there are any changes and let you know.
+        """.format(
+            os.path.basename(__file__)
+        ).strip()
+        # If there are no changes it can also push and pull to/from a remote location.
+    )
     parser.add_argument("dir", help="directory to parse sub dirs from")
     group = parser.add_mutually_exclusive_group()
     group.add_argument(
