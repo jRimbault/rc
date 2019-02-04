@@ -18,11 +18,16 @@ async def main(args, argv):
         print(*repos, sep="\n")
         sys.exit(0)
 
-    padding = len(max(repos, key=len)) + 2
-    tasks = [git_repo(args.dir, repo, "status") for repo in repos]
+    padding = max(map(len, repos)) + 2
+    async for repo, status in repos_statuses(args.dir, repos):
+        print(f"{repo:<{padding}}: {status}", flush=True)
+
+
+async def repos_statuses(base_dir, repos):
+    tasks = [git_repo(base_dir, repo, "status") for repo in repos]
     for task in asyncio.as_completed(tasks):
         repo, out = await task
-        print(f"{repo:<{padding}}: {message(out)}", flush=True)
+        yield repo, status_message(out)
 
 
 def find_repos(base_dir):
@@ -43,16 +48,16 @@ def async_io(func):
 
 @async_io
 def git_repo(base_dir, repo, command):
-    gitdir = os.path.join(base_dir, os.path.join(repo, ".git"))
-    command = (
-        "git",
-        "--git-dir",
-        gitdir,
-        "--work-tree",
-        os.path.join(base_dir, repo),
-        command,
-    )
-    return repo, run(command)
+    return repo, run_git_repo(os.path.join(base_dir, repo), command)
+
+
+def run_git_repo(repo, action):
+    command = ["git", "--git-dir", os.path.join(repo, ".git"), "--work-tree", repo]
+    if type(action) == list:
+        command += action
+    elif type(action) == str:
+        command.append(action)
+    return run(command)
 
 
 class Colors:
@@ -68,7 +73,7 @@ def colorize(color, message):
     return "{0}{1}{2}".format(color, message, Colors.ENDC)
 
 
-def message(out):
+def status_message(out):
     messages = []
     clean = True
     # changed from "directory" to "tree" in git 2.9.1
@@ -100,13 +105,9 @@ def message(out):
 def run(command):
     try:
         output = subprocess.check_output(command)
-        if isinstance(output, bytes):
-            output = output.decode("utf-8")
-        return output
+        return output.decode("utf-8")
     except subprocess.CalledProcessError as e:
-        if isinstance(e.output, bytes):
-            e.output = e.output.decode("utf-8")
-        return e.output
+        return e.output.decode("utf-8")
 
 
 def parse_args(argv):
