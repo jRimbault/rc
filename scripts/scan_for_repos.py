@@ -13,18 +13,21 @@ LOOP = asyncio.get_event_loop()
 
 
 async def main(args, argv):
+    def clean(filename):
+        return filename[len(args.dir):].strip("/")
+
     repos = find_repos(args.dir)
     if not args.status:
-        print(*repos, sep="\n")
+        print(*[clean(repo) for repo in repos], sep="\n")
         return
 
-    padding = max(map(len, repos)) + 2
-    async for repo, status in repos_statuses(args.dir, repos):
-        print(f"{repo:<{padding}}: {status}", flush=True)
+    padding = max(map(len, repos)) - len(args.dir)
+    async for repo, status in repos_statuses(repos):
+        print(f"{clean(repo):<{padding}}: {status}", flush=True)
 
 
-async def repos_statuses(base_dir, repos):
-    tasks = [git_repo(base_dir, repo, "status") for repo in repos]
+async def repos_statuses(repos):
+    tasks = [git_repo(repo, "status") for repo in repos]
     for task in asyncio.as_completed(tasks):
         repo, out = await task
         yield repo, status_message(out)
@@ -32,7 +35,7 @@ async def repos_statuses(base_dir, repos):
 
 def find_repos(base_dir):
     def clean(filename):
-        return filename[len(base_dir) : -4].strip("/")
+        return filename[:-4].rstrip("/")
 
     search_glob = os.path.join(base_dir, "**/.git")
     return [clean(f) for f in glob.iglob(search_glob, recursive=True)]
@@ -47,8 +50,8 @@ def async_io(func):
 
 
 @async_io
-def git_repo(base_dir, repo, command):
-    return repo, run_git_repo(os.path.join(base_dir, repo), command)
+def git_repo(repo, command):
+    return repo, run_git_repo(os.path.join(repo), command)
 
 
 def run_git_repo(repo, action):
