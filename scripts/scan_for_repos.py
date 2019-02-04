@@ -14,10 +14,10 @@ LOOP = asyncio.get_event_loop()
 
 async def main(args, argv):
     repos = find_repos(args.dir)
-    tasks = [get_repo_status(os.path.join(args.dir, repo)) for repo in repos]
     padding = len(max(repos, key=len)) + 2
-    for repo, task in zip(repos, tasks):
-        status = await task
+    tasks = [get_repo_status(args.dir, repo) for repo in repos]
+    for task in asyncio.as_completed(tasks):
+        repo, status = await task
         print(f"{repo:<{padding}}: {status}", flush=True)
 
 
@@ -29,7 +29,7 @@ def find_repos(base_dir):
     return [clean(f) for f in glob.iglob(search_glob, recursive=True)]
 
 
-def async_t(func):
+def async_io(func):
     @wraps(func)
     def threaded_executor(*args):
         return LOOP.run_in_executor(None, func, *args)
@@ -37,11 +37,11 @@ def async_t(func):
     return threaded_executor
 
 
-@async_t
-def get_repo_status(repo):
-    gitdir = os.path.join(repo, ".git")
-    command = f"git --git-dir {gitdir} --work-tree {repo} status".split()
-    return message(run(command))
+@async_io
+def get_repo_status(base_dir, repo):
+    gitdir = os.path.join(base_dir, os.path.join(repo, ".git"))
+    command = f"git --git-dir {gitdir} --work-tree {os.path.join(base_dir, repo)} status".split()
+    return repo, message(run(command))
 
 
 class Colors:
@@ -100,9 +100,7 @@ def run(command):
 
 def parse_args(argv):
     p = argparse.ArgumentParser()
-    p.add_argument(
-        "dir", help="directory to parse sub dirs from. (default: .)", default="."
-    )
+    p.add_argument("dir", help="directory to parse sub dirs from")
     return p.parse_known_args(argv)
 
 
