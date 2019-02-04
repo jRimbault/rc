@@ -44,6 +44,8 @@ async def main(args, argv):
         await loop(repos_fetch)
     elif args.pull:
         await loop(repos_pull)
+    elif args.push:
+        await loop(repos_push)
     else:
         print(*[clean(repo) for repo in repos], sep="\n")
 
@@ -70,6 +72,13 @@ async def repos_pull(repos):
         out = "No action taken"
         _, repo, out = await task
         yield repo, pull_message(out)
+
+
+async def repos_push(repos):
+    git_push = as_completed(git_repo("push"))
+    for task in git_push(repos):
+        _, repo, out = await task
+        yield repo, push_message(out)
 
 
 def as_completed(method):
@@ -178,6 +187,15 @@ def pull_message(out):
     return ", ".join(messages)
 
 
+def push_message(out):
+    if re.search(r"\[(remote )?rejected\]", out):
+        return colorize(Colors.FAIL, "Push rejected")
+    if "denied" in out:
+        return colorize(Colors.FAIL, "Denied permission")
+
+    return colorize(Colors.OKBLUE, "Pushed OK")
+
+
 class Colors:
     OKBLUE = "\033[94m"  # write operation succeeded
     OKGREEN = "\033[92m"  # readonly operation succeeded
@@ -216,6 +234,7 @@ def parse_args(argv):
     actions.add_argument("-s", "--status", help="show status", action="store_true")
     actions.add_argument("-f", "--fetch", help="fetch from remote", action="store_true")
     actions.add_argument("-p", "--pull", help="pull from remote", action="store_true")
+    actions.add_argument("-P", "--push", help="push to remote", action="store_true")
     parser.add_argument(
         "-A", "--absolute", help="display absolute paths", action="store_true"
     )
