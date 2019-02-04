@@ -26,9 +26,14 @@ async def main(args, argv):
             return max(map(len, repos)) + 1
         return max(map(len, repos)) - len(args.dir)
 
+    def _print(repo, status):
+        if args.hide_clean and "Clean" in status:
+            return
+        print(f"{clean(repo):<{padding}}: {status}", flush=True)
+
     async def loop(method):
         async for repo, status in method(repos):
-            print(f"{clean(repo):<{padding}}: {status}", flush=True)
+            _print(repo, status)
 
     repos = find_repos(args.dir)
     padding = max_padding(repos)
@@ -42,23 +47,26 @@ async def main(args, argv):
 
 
 async def repos_statuses(repos):
-    git_status = git_repo("status")
-    for task in as_completed(git_status, repos):
+    git_status = as_completed(git_repo("status"))
+    for task in git_status(repos):
         _, repo, out = await task
         yield repo, status_message(out)
 
 
 async def repos_fetch(repos):
-    git_fetch = git_repo(["fetch", "--all"])
     git_status = git_repo("status")
-    for task in as_completed(git_fetch, repos):
+    git_fetch = as_completed(git_repo(["fetch", "--all"]))
+    for task in git_fetch(repos):
         errcode, repo, out = await task
         _, _, status = await git_status(repo)
         yield repo, status_message(status) + ", " + fetch_message(errcode, out)
 
 
-def as_completed(method, iterable):
-    return asyncio.as_completed([method(i) for i in iterable])
+def as_completed(method):
+    def inner(iterable):
+        return asyncio.as_completed([method(i) for i in iterable])
+
+    return inner
 
 
 def find_repos(base_dir):
@@ -178,6 +186,9 @@ def parse_args(argv):
     group.add_argument("-f", "--fetch", help="fetch from remote", action="store_true")
     parser.add_argument(
         "-A", "--absolute", help="display absolute paths", action="store_true"
+    )
+    parser.add_argument(
+        "-H", "--hide-clean", help="hide clean repos", action="store_true"
     )
     return parser.parse_known_args(argv)
 
