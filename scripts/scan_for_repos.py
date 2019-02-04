@@ -39,18 +39,23 @@ async def main(args, argv):
 
 
 async def repos_statuses(repos):
-    tasks = [git_repo(repo, "status") for repo in repos]
-    for task in asyncio.as_completed(tasks):
+    git_status = git_repo("status")
+    for task in as_completed(git_status, repos):
         _, repo, out = await task
         yield repo, status_message(out)
 
 
 async def repos_fetch(repos):
-    tasks = [git_repo(repo, "fetch --all".split()) for repo in repos]
-    for task in asyncio.as_completed(tasks):
+    git_fetch = git_repo(["fetch", "--all"])
+    git_status = git_repo("status")
+    for task in as_completed(git_fetch, repos):
         errcode, repo, out = await task
-        _, _, status = await git_repo(repo, "status")
+        _, _, status = await git_status(repo)
         yield repo, status_message(status) + ", " + fetch_message(errcode, out)
+
+
+def as_completed(method, iterable):
+    return asyncio.as_completed([method(i) for i in iterable])
 
 
 def find_repos(base_dir):
@@ -69,19 +74,27 @@ def async_io(func):
     return threaded_executor
 
 
-@async_io
-def git_repo(repo, command):
-    status, out = run_git_repo(os.path.join(repo), command)
-    return status, repo, out
+def git_repo(command):
+    @async_io
+    def inner(repo):
+        def run_git_repo(action):
+            command = [
+                "git",
+                "--git-dir",
+                os.path.join(repo, ".git"),
+                "--work-tree",
+                repo,
+            ]
+            if type(action) == list:
+                command += action
+            elif type(action) == str:
+                command.append(action)
+            return run(command)
 
+        status, out = run_git_repo(command)
+        return status, repo, out
 
-def run_git_repo(repo, action):
-    command = ["git", "--git-dir", os.path.join(repo, ".git"), "--work-tree", repo]
-    if type(action) == list:
-        command += action
-    elif type(action) == str:
-        command.append(action)
-    return run(command)
+    return inner
 
 
 def fetch_message(errcode, out):
