@@ -16,7 +16,7 @@ async def main(args, argv):
     repos = find_repos(args.dir)
     if not args.status:
         print(*repos, sep="\n")
-        sys.exit(0)
+        return
 
     padding = max(map(len, repos)) + 2
     async for repo, status in repos_statuses(args.dir, repos):
@@ -60,19 +60,6 @@ def run_git_repo(repo, action):
     return run(command)
 
 
-class Colors:
-    OKBLUE = "\033[94m"  # write operation succeeded
-    OKGREEN = "\033[92m"  # readonly operation succeeded
-    OKPURPLE = "\033[95m"  # readonly (fetch) operation succeeded
-    WARNING = "\033[93m"  # operation succeeded with non-default result
-    FAIL = "\033[91m"  # operation did not succeed
-    ENDC = "\033[0m"  # reset color
-
-
-def colorize(color, message):
-    return "{0}{1}{2}".format(color, message, Colors.ENDC)
-
-
 def status_message(out):
     messages = []
     clean = True
@@ -100,6 +87,21 @@ def status_message(out):
         messages = [colorize(Colors.OKGREEN, "Clean")]
 
     return ", ".join(messages)
+
+
+class Colors:
+    OKBLUE = "\033[94m"  # write operation succeeded
+    OKGREEN = "\033[92m"  # readonly operation succeeded
+    OKPURPLE = "\033[95m"  # readonly (fetch) operation succeeded
+    WARNING = "\033[93m"  # operation succeeded with non-default result
+    FAIL = "\033[91m"  # operation did not succeed
+    ENDC = "\033[0m"  # reset color
+
+
+def colorize(color, message):
+    if os.name == "nt":
+        return message
+    return f"{color}{message}{Colors.ENDC}"
 
 
 def run(command):
