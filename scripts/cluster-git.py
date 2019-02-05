@@ -58,52 +58,42 @@ async def repos_statuses(repos):
 
 
 async def repos_fetch(repos):
-    @iter_as_completed
-    async def git_status(fetch_task):
-        errcode, repo, out = await fetch_task
-        _, _, status = await git_async_status(repo)
-        return repo, fetch_message(errcode, out) + ", " + status_message(status)
-
     git_async_status = git_async_action("status")
     git_fetch = iter_as_completed(git_async_action(["fetch", "--all"]))
 
-    for task in git_status(git_fetch(repos)):
+    for task in git_status(git_fetch(repos), git_async_status, fetch_message):
         yield await task
 
 
 async def repos_pull(repos):
-    @iter_as_completed
-    async def git_status(pull_task):
-        _, repo, out = await pull_task
-        _, _, status = await git_async_status(repo)
-        return repo, pull_message(out) + ", " + status_message(status)
-
     git_async_status = git_async_action("status")
     git_pull = iter_as_completed(git_async_action("pull"))
 
-    for task in git_status(git_pull(repos)):
+    for task in git_status(git_pull(repos), git_async_status, pull_message):
         yield await task
 
 
 async def repos_push(repos):
-    @iter_as_completed
-    async def git_status(push_task):
-        _, repo, out = await push_task
-        _, _, status = await git_async_status(repo)
-        return repo, push_message(out) + ", " + status_message(status)
-
     git_async_status = git_async_action("status")
     git_push = iter_as_completed(git_async_action("push"))
 
-    for task in git_status(git_push(repos)):
+    for task in git_status(git_push(repos), git_async_status, push_message):
         yield await task
 
 
 def iter_as_completed(method):
-    def inner(iterable):
-        return asyncio.as_completed([method(i) for i in iterable])
+    def inner(iterable, *a, **kw):
+        return asyncio.as_completed([method(i, *a, **kw) for i in iterable])
 
     return inner
+
+
+@iter_as_completed
+async def git_status(task, git_async_status, extract_message):
+    errcode, repo, out = await task
+    _, _, status = await git_async_status(repo)
+    messages = [extract_message(errcode, out), status_message(status)]
+    return repo, ", ".join(messages)
 
 
 def find_repos(base_dir):
@@ -175,7 +165,7 @@ def status_message(out):
     return ", ".join(messages)
 
 
-def pull_message(out):
+def pull_message(errcode, out):
     if out == "No action taken":
         return out
 
@@ -196,7 +186,7 @@ def pull_message(out):
     return ", ".join(messages)
 
 
-def push_message(out):
+def push_message(errcode, out):
     messages = []
     error = False
     if "read-only" in out:
