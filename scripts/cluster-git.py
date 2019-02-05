@@ -51,41 +51,55 @@ async def main(args, argv):
 
 
 async def repos_statuses(repos):
-    git_status = as_completed(git_repo("status"))
+    git_status = iter_as_completed(git_async_action("status"))
     for task in git_status(repos):
         _, repo, out = await task
         yield repo, status_message(out)
 
 
 async def repos_fetch(repos):
-    git_status = run_in_repo("status")
-    git_fetch = as_completed(git_repo(["fetch", "--all"]))
-    for task in git_fetch(repos):
-        errcode, repo, out = await task
-        _, status = git_status(repo)
-        yield repo, status_message(status) + ", " + fetch_message(errcode, out)
+    @iter_as_completed
+    async def git_status(fetch_task):
+        errcode, repo, out = await fetch_task
+        _, _, status = await git_async_status(repo)
+        return repo, fetch_message(errcode, out) + ", " + status_message(status)
+
+    git_async_status = git_async_action("status")
+    git_fetch = iter_as_completed(git_async_action(["fetch", "--all"]))
+
+    for task in git_status(git_fetch(repos)):
+        yield await task
 
 
 async def repos_pull(repos):
-    git_status = run_in_repo("status")
-    git_pull = as_completed(git_repo("pull"))
-    for task in git_pull(repos):
-        out = "No action taken"
-        _, repo, out = await task
-        _, status = git_status(repo)
-        yield repo, status_message(status) + ", " + pull_message(out)
+    @iter_as_completed
+    async def git_status(pull_task):
+        _, repo, out = await pull_task
+        _, _, status = await git_async_status(repo)
+        return repo, pull_message(out) + ", " + status_message(status)
+
+    git_async_status = git_async_action("status")
+    git_pull = iter_as_completed(git_async_action("pull"))
+
+    for task in git_status(git_pull(repos)):
+        yield await task
 
 
 async def repos_push(repos):
-    git_status = run_in_repo("status")
-    git_push = as_completed(git_repo("push"))
-    for task in git_push(repos):
-        _, repo, out = await task
-        _, status = git_status(repo)
-        yield repo, status_message(status) + ", " + push_message(out)
+    @iter_as_completed
+    async def git_status(push_task):
+        _, repo, out = await push_task
+        _, _, status = await git_async_status(repo)
+        return repo, push_message(out) + ", " + status_message(status)
+
+    git_async_status = git_async_action("status")
+    git_push = iter_as_completed(git_async_action("push"))
+
+    for task in git_status(git_push(repos)):
+        yield await task
 
 
-def as_completed(method):
+def iter_as_completed(method):
     def inner(iterable):
         return asyncio.as_completed([method(i) for i in iterable])
 
@@ -105,18 +119,11 @@ def async_io(func):
     return threaded_executor
 
 
-def git_repo(action):
+def git_async_action(action):
     @async_io
     def inner(repo):
         status, out = run_git_repo(repo, action)
         return status, repo, out
-
-    return inner
-
-
-def run_in_repo(action):
-    def inner(repo):
-        return run_git_repo(repo, action)
 
     return inner
 
@@ -144,8 +151,6 @@ def fetch_message(errcode, out):
 def status_message(out):
     messages = []
     clean = True
-    # changed from "directory" to "tree" in git 2.9.1
-    # https://github.com/mnagel/clustergit/issues/18
     if "On branch master" not in out:
         branch = out.splitlines()[0].replace("On branch ", "")
         messages.append(colorize(Colors.WARNING, "On branch %s" % branch))
@@ -192,12 +197,26 @@ def pull_message(out):
 
 
 def push_message(out):
+    messages = []
+    error = False
+    if "read-only" in out:
+        messages.append(colorize(Colors.WARNING, "Read-only remote"))
+        error = True
     if re.search(r"\[(remote )?rejected\]", out):
-        return colorize(Colors.FAIL, "Push rejected")
+        messages.append(colorize(Colors.FAIL, "Push rejected"))
+        error = True
     if "denied" in out:
-        return colorize(Colors.FAIL, "Denied permission")
+        messages.append(colorize(Colors.FAIL, "Permission denied"))
+        error = True
 
-    return colorize(Colors.OKBLUE, "Pushed OK")
+    if "Everything up-to-date" in out:
+        messages.append(colorize(Colors.OKGREEN, "Already up-to-date"))
+        error = True
+
+    if not error:
+        messages.append(colorize(Colors.OKBLUE, "Push accepted"))
+
+    return ", ".join(messages)
 
 
 class Colors:
@@ -228,10 +247,10 @@ def parse_args(argv):
         description="""
         {0} will scan through all subdirectories looking for a .git directory.
         When it finds one it'll look to see if there are any changes and let you know.
+        If there are no changes it can also push and pull to/from a remote location.
         """.format(
             os.path.basename(__file__)
         ).strip()
-        # If there are no changes it can also push and pull to/from a remote location.
     )
     parser.add_argument("dir", help="directory to parse sub dirs from")
     actions = parser.add_mutually_exclusive_group()
