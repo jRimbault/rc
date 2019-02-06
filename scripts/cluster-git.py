@@ -45,13 +45,13 @@ async def main(args, argv):
         await loop(repos_statuses, git_status)
     elif args.fetch:
         fetch_all = GitAction(["fetch", "--all"], parser.fetch_message)
-        await loop(repos_action, git_status, fetch_all)
+        await loop(repos_action, fetch_all, git_status)
     elif args.pull:
         pull = GitAction("pull", parser.pull_message)
-        await loop(repos_action, git_status, pull)
+        await loop(repos_action, pull, git_status)
     elif args.push:
         push = GitAction("push", parser.push_message)
-        await loop(repos_action, git_status, push)
+        await loop(repos_action, push, git_status)
     elif args.exec:
         await loop(execute, args.exec.split(), parser.exec_message)
     else:
@@ -71,21 +71,21 @@ async def repos_statuses(repos, git_status: GitAction):
         yield repo, git_status.parser(errcode, out)
 
 
-async def repos_action(repos, a1: GitAction, a2: GitAction):
+async def repos_action(repos, principal: GitAction, secondary: GitAction):
     @iter_as_completed
-    async def git_chain(task, to_chain, parser1, parser2):
+    async def git_chain(task):
         """
         expects the result from another git_async_action
         allows them chaining together and keep yielding in completion order
         """
         errcode1, repo, out1 = await task
-        errcode2, _, out2 = await to_chain(repo)
-        messages = [parser1(errcode1, out1), parser2(errcode2, out2)]
-        return repo, ", ".join(messages)
+        errcode2, _, out2 = await secondary.action(repo)
+        return errcode1, errcode2, repo, out1, out2
 
-    action = iter_as_completed(a2.action)
-    for task in git_chain(action(repos), a1.action, a2.parser, a1.parser):
-        yield await task
+    action = iter_as_completed(principal.action)
+    for task in git_chain(action(repos)):
+        e1, e2, repo, o1, o2 = await task
+        yield repo, ", ".join([principal.parser(e1, o1), secondary.parser(e2, o2)])
 
 
 async def execute(repos, command, parser):
