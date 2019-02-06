@@ -39,21 +39,21 @@ async def main(args, argv):
     repos = find_repos(args.dir)
     padding = max_padding(repos)
     parser = Parser()
-    git_status = GitAction("status", parser.status_message)
+    status = GitAction("status", parser.status)
 
     if args.status:
-        await loop(repos_statuses, git_status)
+        await loop(repos_statuses, status)
     elif args.fetch:
-        fetch_all = GitAction(["fetch", "--all"], parser.fetch_message)
-        await loop(repos_action, fetch_all, git_status)
+        fetch_all = GitAction(["fetch", "--all"], parser.fetch)
+        await loop(repos_action, fetch_all, status)
     elif args.pull:
-        pull = GitAction("pull", parser.pull_message)
-        await loop(repos_action, pull, git_status)
+        pull = GitAction("pull", parser.pull)
+        await loop(repos_action, pull, status)
     elif args.push:
-        push = GitAction("push", parser.push_message)
-        await loop(repos_action, push, git_status)
+        push = GitAction("push", parser.push)
+        await loop(repos_action, push, status)
     elif args.exec:
-        await loop(execute, args.exec.split(), parser.exec_message)
+        await loop(execute, args.exec.split(), parser.exec)
     else:
         print(*[clean(repo) for repo in repos], sep="\n")
 
@@ -102,7 +102,7 @@ async def execute(repos, command, parser):
 
 def iter_as_completed(method):
     """
-    transforms an async function taking one item into a list procecessing function
+    transforms an async function taking one item into a list processing function
     yielding its result in completion order (first finished first yielded)
     """
 
@@ -156,7 +156,7 @@ def run_git_repo(repo, action):
 class Parser:
     """ Parse a user readable message from the stdout/stderr of git """
 
-    def fetch_message(self, errcode, out):
+    def fetch(self, errcode, out):
         fetch = []
         if "error: " in out:
             fetch.append(colorize(Colors.FAIL, "Fetch fatal"))
@@ -166,7 +166,7 @@ class Parser:
             fetch.append(colorize(Colors.FAIL, "Fetch unsuccessful"))
         return ", ".join(fetch)
 
-    def status_message(self, errcode, out):
+    def status(self, errcode, out):
         messages = []
         clean = True
         if "On branch master" not in out:
@@ -192,7 +192,7 @@ class Parser:
 
         return ", ".join(messages)
 
-    def pull_message(self, errcode, out):
+    def pull(self, errcode, out):
         messages = []
         if re.search(r"Already up.to.date", out):
             messages.append(colorize(Colors.OKGREEN, "Pulled nothing"))
@@ -209,7 +209,7 @@ class Parser:
 
         return ", ".join(messages)
 
-    def push_message(self, errcode, out):
+    def push(self, errcode, out):
         messages = []
         error = False
         if "read-only" in out:
@@ -231,7 +231,7 @@ class Parser:
 
         return ", ".join(messages)
 
-    def exec_message(self, errcode, out):
+    def exec(self, errcode, out):
         messages = []
         if errcode != 0:
             messages.append(colorize(Colors.FAIL, f"Return code {errcode}"))
