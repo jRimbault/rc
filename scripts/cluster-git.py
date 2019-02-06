@@ -38,38 +38,39 @@ async def main(args, argv):
 
     repos = find_repos(args.dir)
     padding = max_padding(repos)
-    git_status = Action("status", Parse.status_message)
+    git_status = GitAction("status", Parse.status_message)
 
     if args.status:
         await loop(repos_statuses, git_status)
     elif args.fetch:
-        await loop(
-            repos_action, git_status, Action(["fetch", "--all"], Parse.fetch_message)
-        )
+        fetch_all = GitAction(["fetch", "--all"], Parse.fetch_message)
+        await loop(repos_action, git_status, fetch_all)
     elif args.pull:
-        await loop(repos_action, git_status, Action("pull", Parse.pull_message))
+        pull = GitAction("pull", Parse.pull_message)
+        await loop(repos_action, git_status, pull)
     elif args.push:
-        await loop(repos_action, git_status, Action("push", Parse.push_message))
+        push = GitAction("push", Parse.push_message)
+        await loop(repos_action, git_status, push)
     elif args.exec:
         await loop(execute, args.exec.split())
     else:
         print(*[clean(repo) for repo in repos], sep="\n")
 
 
-class Action:
+class GitAction:
     def __init__(self, action, parser):
         self.action = git_async_action(action)
         self.parser = parser
 
 
-async def repos_statuses(repos, git_status: Action):
+async def repos_statuses(repos, git_status: GitAction):
     status = iter_as_completed(git_status.action)
     for task in status(repos):
         errcode, repo, out = await task
         yield repo, git_status.parser(errcode, out)
 
 
-async def repos_action(repos, a1: Action, a2: Action):
+async def repos_action(repos, a1: GitAction, a2: GitAction):
     @iter_as_completed
     async def git_chain(task, to_chain, parser1, parser2):
         """
