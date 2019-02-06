@@ -31,54 +31,56 @@ async def main(args, argv):
             return
         print(f"{clean(repo):<{padding}}: {status}", flush=True)
 
-    async def loop(method):
+    async def loop(method, *args):
         """ helper method to keep all actions under one interface """
-        async for repo, status in method(repos):
+        async for repo, status in method(repos, *args):
             _print(repo, status)
 
     repos = find_repos(args.dir)
     padding = max_padding(repos)
+    git_status = Action("status", Parse.status_message)
 
     if args.status:
-        await loop(repos_statuses)
+        await loop(repos_statuses, git_status)
     elif args.fetch:
-        await loop(repos_fetch)
+        await loop(
+            repos_action, git_status, Action(["fetch", "--all"], Parse.fetch_message)
+        )
     elif args.pull:
-        await loop(repos_pull)
+        await loop(repos_action, git_status, Action("pull", Parse.pull_message))
     elif args.push:
-        await loop(repos_push)
+        await loop(repos_action, git_status, Action("push", Parse.push_message))
     else:
         print(*[clean(repo) for repo in repos], sep="\n")
 
 
-async def repos_statuses(repos):
-    git_status = iter_as_completed(git_async_action("status"))
-    for task in git_status(repos):
-        _, repo, out = await task
-        yield repo, Parse.status_message(out)
+class Action:
+    def __init__(self, action, parser):
+        self.action = git_async_action(action)
+        self.parser = parser
 
 
-async def repos_fetch(repos):
-    git_async_status = git_async_action("status")
-    git_fetch = iter_as_completed(git_async_action(["fetch", "--all"]))
-
-    for task in git_status(git_fetch(repos), git_async_status, Parse.fetch_message):
-        yield await task
-
-
-async def repos_pull(repos):
-    git_async_status = git_async_action("status")
-    git_pull = iter_as_completed(git_async_action("pull"))
-
-    for task in git_status(git_pull(repos), git_async_status, Parse.pull_message):
-        yield await task
+async def repos_statuses(repos, git_status: Action):
+    status = iter_as_completed(git_status.action)
+    for task in status(repos):
+        errcode, repo, out = await task
+        yield repo, git_status.parser(errcode, out)
 
 
-async def repos_push(repos):
-    git_async_status = git_async_action("status")
-    git_push = iter_as_completed(git_async_action("push"))
+async def repos_action(repos, a1: Action, a2: Action):
+    @iter_as_completed
+    async def git_chain(task, to_chain, parser1, parser2):
+        """
+        expects the result from another git_async_action
+        allows them chaining together and keep yielding in completion order
+        """
+        errcode1, repo, out1 = await task
+        errcode2, _, out2 = await to_chain(repo)
+        messages = [parser1(errcode1, out1), parser2(errcode2, out2)]
+        return repo, ", ".join(messages)
 
-    for task in git_status(git_push(repos), git_async_status, Parse.push_message):
+    action = iter_as_completed(a2.action)
+    for task in git_chain(action(repos), a1.action, a2.parser, a1.parser):
         yield await task
 
 
@@ -93,18 +95,6 @@ def iter_as_completed(method):
         return asyncio.as_completed([method(i, *a, **kw) for i in iterable])
 
     return inner
-
-
-@iter_as_completed
-async def git_status(task, git_async_status, extract_message):
-    """
-    expects the result from another git_async_action
-    allows them chaining together and keep yielding in completion order
-    """
-    errcode, repo, out = await task
-    _, _, status = await git_async_status(repo)
-    messages = [extract_message(errcode, out), Parse.status_message(status)]
-    return repo, ", ".join(messages)
 
 
 def find_repos(base_dir):
@@ -162,7 +152,7 @@ class Parse:
         return ", ".join(fetch)
 
     @staticmethod
-    def status_message(out):
+    def status_message(errcode, out):
         messages = []
         clean = True
         if "On branch master" not in out:
