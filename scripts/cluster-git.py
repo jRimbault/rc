@@ -38,7 +38,7 @@ async def main(args, argv):
 
     repos = find_repos(args.dir)
     padding = max_padding(repos)
-    parser = Parser()
+    parser = Parser(args)
     status = GitAction("status", parser.status)
 
     if args.status:
@@ -155,6 +155,10 @@ def run_git_repo(repo, action):
 
 class Parser:
     """ Parse a user readable message from the stdout/stderr of git """
+
+    def __init__(self, args):
+        # if I wanted to customize the output based on user's options
+        self.option = args
 
     def fetch(self, errcode, out):
         fetch = []
