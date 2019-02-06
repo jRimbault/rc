@@ -50,6 +50,8 @@ async def main(args, argv):
         await loop(repos_action, git_status, Action("pull", Parse.pull_message))
     elif args.push:
         await loop(repos_action, git_status, Action("push", Parse.push_message))
+    elif args.exec:
+        await loop(execute, args.exec.split())
     else:
         print(*[clean(repo) for repo in repos], sep="\n")
 
@@ -82,6 +84,18 @@ async def repos_action(repos, a1: Action, a2: Action):
     action = iter_as_completed(a2.action)
     for task in git_chain(action(repos), a1.action, a2.parser, a1.parser):
         yield await task
+
+
+async def execute(repos, command):
+    @iter_as_completed
+    @async_io
+    def _run(repo, command):
+        errcode, out = run(command, repo)
+        return errcode, repo, out.strip()
+
+    for task in _run(repos, command):
+        errcode, repo, out = await task
+        yield repo, Parse.exec_message(errcode, out)
 
 
 def iter_as_completed(method):
@@ -129,12 +143,12 @@ def git_async_action(action):
 
 def run_git_repo(repo, action):
     """ Run a git command on the given repository """
-    command = ["git", "--git-dir", os.path.join(repo, ".git"), "--work-tree", repo]
+    command = ["git"]
     if type(action) == list:
         command += action
     elif type(action) == str:
         command.append(action)
-    return run(command)
+    return run(command, repo)
 
 
 class Parse:
@@ -219,6 +233,17 @@ class Parse:
 
         return ", ".join(messages)
 
+    @staticmethod
+    def exec_message(errcode, out):
+        messages = []
+        if errcode != 0:
+            messages.append(colorize(Colors.FAIL, f"Return code {errcode}"))
+        else:
+            messages.append(colorize(Colors.OKGREEN, f"Return code {errcode}"))
+
+        messages.append("\n".join(f"    {line}" for line in out.split("\n")))
+        return "\n".join(messages) + "\n"
+
 
 class Colors:
     OKBLUE = "\033[94m"  # write operation succeeded
@@ -235,9 +260,9 @@ def colorize(color, message):
     return f"{color}{message}{Colors.ENDC}"
 
 
-def run(command):
+def run(command, cwd=None):
     try:
-        output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+        output = subprocess.check_output(command, stderr=subprocess.STDOUT, cwd=cwd)
         return 0, output.decode("utf-8")
     except subprocess.CalledProcessError as e:
         return e.returncode, e.output.decode("utf-8")
@@ -259,6 +284,7 @@ def parse_args(argv):
     actions.add_argument("-f", "--fetch", help="fetch from remote", action="store_true")
     actions.add_argument("-p", "--pull", help="pull from remote", action="store_true")
     actions.add_argument("-P", "--push", help="push to remote", action="store_true")
+    actions.add_argument("--exec", help="execute custom command on each repo")
     parser.add_argument(
         "-A", "--absolute", help="display absolute paths", action="store_true"
     )
