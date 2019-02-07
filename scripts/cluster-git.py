@@ -43,6 +43,9 @@ async def main(args, argv):
 
     if args.status:
         await loop(repos_statuses, status)
+    elif args.branch:
+        branch = GitAction("status", parser.branch)
+        await loop(repos_statuses, branch)
     elif args.fetch:
         fetch_all = GitAction(["fetch", "--all"], parser.fetch)
         await loop(repos_action, fetch_all, status)
@@ -195,6 +198,10 @@ class Parser:
 
         return ", ".join(messages)
 
+    def branch(self, errcode, out):
+        branch = out.splitlines()[0].replace("On branch ", "")
+        return colorize(Colors.OKGREEN, branch)
+
     def pull(self, errcode, out):
         messages = []
         if re.search(r"Already up.to.date", out):
@@ -281,6 +288,7 @@ def parse_args(argv):
     parser.add_argument("dir", help="directory to parse sub dirs from")
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument("-s", "--status", help="show status", action="store_true")
+    actions.add_argument("-b", "--branch", help="show branch", action="store_true")
     actions.add_argument("-f", "--fetch", help="fetch from remote", action="store_true")
     actions.add_argument("-p", "--pull", help="pull from remote", action="store_true")
     actions.add_argument("-P", "--push", help="push to remote", action="store_true")
