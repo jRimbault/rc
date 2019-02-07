@@ -19,12 +19,14 @@ async def main(args, argv):
     def clean(filename):
         if args.absolute:
             return filename
+        if uniq_repo:
+            return os.path.basename(filename)
         return filename[len(args.dir) :].strip("/")
 
     def max_padding(repos):
         if args.absolute:
             return max(map(len, repos)) + 1
-        return max(map(len, repos)) - len(args.dir)
+        return max(map(len, repos)) - len(args.dir) + 1
 
     def _print(repo, status):
         if args.hide_clean and "Clean" in status:
@@ -37,6 +39,7 @@ async def main(args, argv):
             _print(repo, status)
 
     repos = find_repos(args.dir)
+    uniq_repo = 1 == len(repos)
     padding = max_padding(repos)
     parser = Parser(args)
     status = GitAction("status", parser.status)
