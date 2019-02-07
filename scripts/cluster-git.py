@@ -173,26 +173,25 @@ class Parser:
     def status(self, errcode, out):
         messages = []
         clean = True
-        if "On branch master" not in out:
+
+        if "On branch master" not in out and "On branch develop" not in out:
             branch = out.splitlines()[0].replace("On branch ", "")
-            messages.append(colorize(Colors.WARNING, "On branch %s" % branch))
-            clean = False
-        # changed from "directory" to "tree" in git 2.9.1
-        # https://github.com/mnagel/clustergit/issues/18
-        if re.search(r"nothing to commit.?.?working (directory|tree) clean.?", out):
-            messages.append(colorize(Colors.OKBLUE, "No Changes"))
-        elif "nothing added to commit but untracked files present" in out:
+            messages.append(colorize(Colors.OKBLUE, f"On branch {branch}"))
+
+        if "nothing added to commit but untracked files present" in out:
             messages.append(colorize(Colors.WARNING, "Untracked files"))
             clean = False
-        else:
+
+        if "Changes not staged for commit" in out:
             messages.append(colorize(Colors.FAIL, "Changes"))
             clean = False
+
         if "Your branch is ahead of" in out:
             messages.append(colorize(Colors.FAIL, "Unpushed commits"))
             clean = False
 
         if clean:
-            messages = [colorize(Colors.OKGREEN, "Clean")]
+            messages = [colorize(Colors.OKGREEN, "Clean")] + messages
 
         return ", ".join(messages)
 
