@@ -194,7 +194,6 @@ class Parser:
 
         if "Your branch is ahead of" in out:
             messages.append(self.colorize(Colors.FAIL, "Unpushed commits"))
-            clean = False
 
         if clean:
             messages = [self.colorize(Colors.OKGREEN, "Clean")] + messages
@@ -287,7 +286,9 @@ def parse_args(argv):
             os.path.basename(__file__)
         ).strip()
     )
-    parser.add_argument("dir", help="directory to parse sub dirs from")
+    parser.add_argument(
+        "dir", help="directory to parse sub dirs from", type=os.path.abspath
+    )
     actions = parser.add_mutually_exclusive_group()
     actions.add_argument("-s", "--status", help="show status", action="store_true")
     actions.add_argument("-b", "--branch", help="show branch", action="store_true")
