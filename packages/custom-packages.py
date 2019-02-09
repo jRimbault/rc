@@ -84,7 +84,7 @@ def package_fzf():
 
 def package_clustergit():
     script_url = (
-        r"https://raw.githubusercontent.com/mnagel/clustergit/master/clustergit"
+        r"https://raw.githubusercontent.com/jRimbault/clustergit/master/clustergit"
     )
     binary = "clustergit"
     dest = os.path.join(local_bin_dir(), binary)
