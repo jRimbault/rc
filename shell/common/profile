@@ -17,6 +17,7 @@ prepend:path()
 }
 
 prepend:path "/opt/gradle/gradle-5.0/bin"
+prepend:path "/snap/bin"
 prepend:path "$HOME/.cargo/bin"
 prepend:path "$HOME/.gem/ruby/2.5.0/bin"
 prepend:path "$N_PREFIX/bin"

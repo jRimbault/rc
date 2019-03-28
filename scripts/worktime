@@ -18,6 +18,14 @@ If given two arguments, it assumes a 45 minute pause and shows you how many
 hours you'll be working.
 
 If given three arguments, it shows you how many hours you'll be working.
+
+Examples :
+$ worktime 8:00 # or worktime 8
+15:45:00
+$ worktime 8:00 16:00 # worktime 8 16
+7:15:00
+$ worktime 8 16 1
+7:00:00
 """
 
 

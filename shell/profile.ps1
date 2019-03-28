@@ -38,6 +38,7 @@ function mpv-yta ($search) {
 
 
 function Set-MyPSReadLineOptions {
+    Import-Module PSReadLine
     Set-PSReadlineOption -BellStyle None
     Set-PSReadlineOption -EditMode Emacs
     Set-PSReadlineKeyHandler -Chord UpArrow -Function HistorySearchBackward
@@ -52,9 +53,8 @@ $hosts = @(
 )
 
 if ($hosts.Contains($host.Name)) {
-    Import-Module PSReadLine
-    Import-Module posh-git
     Set-MyPSReadLineOptions
+    Import-Module posh-git
     $GitPromptSettings.DefaultPromptAbbreviateHomeDirectory = $true
 }
 
