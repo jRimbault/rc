@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+import argparse
+from datetime import timedelta
+
+""" Tells you when to leave work.
+
+Assumes a 5 days, 35-hour workweek with mandatory 45 minutes of pause each day.
+
+First argument is when you arrived.
+Second argument is when you left.
+Third argument is your pause duration.
+
+If only given one argument, it assumes a 45 minute pause and 7 hours of work
+and shows you when you should leave.
+
+If given two arguments, it assumes a 45 minute pause and shows you how many
+hours you'll be working.
+
+If given three arguments, it shows you how many hours you'll be working.
+"""
+
+
+def main(args):
+    if args.end is not None:
+        res = args.end - args.start - args.pause
+    else:
+        res = args.start + delta("7:00") + args.pause
+
+    print(res)
+
+
+def delta(moment):
+    parts = [int(p) for p in moment.split(":")]
+    if len(parts) < 2:
+        parts.append(0)
+    return timedelta(hours=parts[0], minutes=parts[1])
+
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("start", type=delta)
+    parser.add_argument("end", nargs="?", default=None, type=delta)
+    parser.add_argument("pause", nargs="?", default=delta("0:45"), type=delta)
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    main(parse_args())
+
