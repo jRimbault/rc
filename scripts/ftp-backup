@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+date
+
+tar-rotate()
+{
+  local ARCHIVE MAX P_MAX
+  ARCHIVE="$1"
+  MAX=${2:-7}
+  P_MAX=$((MAX - 1))
+
+  if [ -f "$ARCHIVE" ]; then
+    if [ -f "$ARCHIVE.$MAX" ]; then
+      rm "$ARCHIVE.$MAX"
+    fi
+
+    while (( MAX > 1 )); do
+      if [ -f "$ARCHIVE.$P_MAX" ]; then
+        echo mv "$ARCHIVE.$P_MAX" "$ARCHIVE.$MAX"
+        mv "$ARCHIVE.$P_MAX" "$ARCHIVE.$MAX"
+      fi
+      MAX=$((MAX - 1))
+      P_MAX=$((P_MAX - 1))
+    done
+
+    echo mv "$ARCHIVE" "$ARCHIVE.1"
+    mv "$ARCHIVE" "$ARCHIVE.1"
+  fi
+}
+
+# FTP Login Data
+# USERNAME=""
+# PASSWORD=""
+BACKUP_DIR="/mnt/pidrive/data/minecraft"
+
+SERVER="ftp.nitroserv.net"
+REMOTE_DIR="/MineCraft/Monheim"
+BASENAME="$(basename "$REMOTE_DIR")"
+
+cd "$BACKUP_DIR" || exit 1
+
+wget -m -nH --cut-dirs=3 -P "$BASENAME" \
+  --user="$USERNAME" \
+  --password="$PASSWORD" \
+  ftp://"$SERVER/$REMOTE_DIR"
+
+echo "Rotating archives"
+tar-rotate "$BASENAME.tar.gz"
+echo "Compressing new archive"
+tar -cvzf "$BASENAME.tar.gz" "$BASENAME"
+echo "Done"
