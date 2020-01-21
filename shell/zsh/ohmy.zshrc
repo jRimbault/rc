@@ -15,3 +15,4 @@ zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/
 
 test -f ~/.def-env-vars && . ~/.def-env-vars
 test -f ~/.env && . ~/.env # if environment overwrite previous settings
+
