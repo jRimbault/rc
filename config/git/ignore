@@ -5,3 +5,6 @@ log/
 *.log
 build/
 .env
+lcov.info
+.mypy_cache/
+.venv/
