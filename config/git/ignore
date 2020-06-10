@@ -1,5 +1,6 @@
 .idea/
 .vscode/
+.venv/
 __pycache__/
 log/
 *.log
@@ -8,3 +9,4 @@ build/
 lcov.info
 .mypy_cache/
 .venv/
+*.dat

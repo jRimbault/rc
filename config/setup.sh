@@ -13,11 +13,16 @@ git_config()
 
 vim_config()
 {
-  mkdir -p "$HOME/.vim"
-  soft_force_symlink "$DIR/vim/init.vim" "$HOME/.vim/vimrc"
-  soft_force_symlink "$DIR/vim/colors" "$HOME/.vim/colors"
-  soft_force_symlink "$DIR/vim/autoload" "$HOME/.vim/autoload"
-  soft_force_symlink "$DIR/vim" "$HOME/.config/nvim"
+  local config_dir
+  config_dir="$HOME/.config/nvim"
+  mkdir -p "$config_dir"
+  mkdir -p "$config_dir/colors"
+  mkdir -p "$config_dir/autoload"
+  soft_force_symlink "$DIR/vim/init.vim" "$config_dir/init.vim"
+  soft_force_symlink "$DIR/vim/onedark.vim/autoload/airline" "$config_dir/autoload/airline"
+  soft_force_symlink "$DIR/vim/onedark.vim/autoload/lightline" "$config_dir/autoload/lightline"
+  soft_force_symlink "$DIR/vim/onedark.vim/autoload/onedark.vim" "$config_dir/autoload/onedark.vim"
+  soft_force_symlink "$DIR/vim/onedark.vim/colors/onedark.vim" "$config_dir/colors/onedark.vim"
 }
 
 setup_home()
