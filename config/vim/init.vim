@@ -6,6 +6,7 @@ set nocompatible
 syntax on
 set termguicolors
 colorscheme onedark
+set guicursor=
 
 " Toggle display of line numbers
 function! ToggleLineNumbers()
