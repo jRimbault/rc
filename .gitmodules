@@ -1,3 +1,6 @@
 [submodule "config/vim/onedark.vim"]
     path = config/vim/onedark.vim
     url = https://github.com/joshdick/onedark.vim.git
+[submodule "config/vim/vim-monochrome"]
+	path = config/vim/vim-monochrome
+	url = https://github.com/fxn/vim-monochrome.git

@@ -5,7 +5,7 @@ autocmd!
 set nocompatible
 syntax on
 set termguicolors
-colorscheme onedark
+colorscheme monochrome
 set guicursor=
 
 " Toggle display of line numbers

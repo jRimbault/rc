@@ -23,6 +23,8 @@ vim_config()
   soft_force_symlink "$DIR/vim/onedark.vim/autoload/lightline" "$config_dir/autoload/lightline"
   soft_force_symlink "$DIR/vim/onedark.vim/autoload/onedark.vim" "$config_dir/autoload/onedark.vim"
   soft_force_symlink "$DIR/vim/onedark.vim/colors/onedark.vim" "$config_dir/colors/onedark.vim"
+  soft_force_symlink "$DIR/vim/vim-monochrome/colors/monochrome.vim"
+  "$config_dir/colors/monochrome.vim"
 }
 
 setup_home()
