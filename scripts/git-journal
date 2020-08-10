@@ -13,7 +13,7 @@ ALIAS = {
         "--format=%C(red)%h%Creset %C(green)%ad%Creset %s",
     ],
     "write": ["commit", "--allow-empty"],
-    "save": ["push"],
+    "backup": ["push"],
 }
 
 
