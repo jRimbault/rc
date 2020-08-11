@@ -62,6 +62,3 @@ alias sed-trailing-whitespace="sed 's/[[:space:]]\\+$//'"
 
 # media
 alias playlist-dl='youtube-dl --extract-audio --ignore-errors --audio-format mp3 -o "%(autonumber)s - %(title)s.%(ext)s"'
-
-# journal
-alias journal='git-journal'

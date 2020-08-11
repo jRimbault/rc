@@ -1,0 +1,134 @@
+#!/usr/bin/env python3
+
+"""journal
+
+Use a git repository as a journal.
+Each commit is a journal entry.
+The actual repository could contain no files.
+
+This script mostly only exists to be able to write to
+the journal from anywhere and add some semantic aliases like:
+  journal write
+  journal entries
+  journal read
+
+All of those can be completed by any valid git options
+for the command it's aliasing:
+  journal write -m "a quick passing thought"
+  journal read --reverse --after=2017 --before=2018-02-03
+"""
+
+import argparse
+import os
+import subprocess
+import sys
+import textwrap
+
+
+def main(parser: argparse.ArgumentParser):
+    args, argv = parser.parse_known_args(sys.argv[1:])
+    if args.action is None:
+        parser.print_help()
+        return 0
+    return args.action(args, argv)
+
+
+def git(func):
+    def inner(args, argv):
+        command = ["git"] + func(args, argv)
+        process = subprocess.run(command, cwd=args.repository)
+        return process.returncode
+
+    return inner
+
+
+@git
+def read(args, argv):
+    if args.ref is None:
+        return ["log"] + argv
+    return ["show", "--shortstat", args.ref] + argv
+
+
+@git
+def entries(args, argv):
+    return [
+        "log",
+        "--date=short",
+        "--format=%C(red)%h%Creset %C(green)%ad%Creset %s",
+    ] + argv
+
+
+@git
+def nav_entries(args, argv):
+    return ["nav-log"] + argv
+
+
+@git
+def write(args, argv):
+    return ["commit", "--allow-empty"] + argv
+
+
+@git
+def backup(args, argv):
+    return ["push"] + argv
+
+
+def build_parser(workdir: str):
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description=textwrap.dedent(
+            """
+            Script meant to interact with a git repository used as a journal.
+            Set the environment variable 'JOURNAL_REPO' to a path pointing
+            to a git repository which will be used as the journal.
+            """
+        ),
+        epilog=textwrap.dedent(
+            """
+            usage examples:
+
+              journal entries --after=2019
+              journal read <shasum>
+              journal read --before=2017
+            """
+        ),
+    )
+    parser.set_defaults(action=None)
+    parser.add_argument(
+        "-r",
+        "--repository",
+        metavar="path",
+        default=workdir,
+        help="override the JOURNAL_REPO environment variable",
+    )
+    subparsers = parser.add_subparsers(required=False, description="")
+    sub = subparsers.add_parser(
+        "read", help="use to read the whole journal", aliases=["r"]
+    )
+    sub.add_argument("ref", help="commit reference", nargs="?")
+    sub.set_defaults(action=read)
+    sub = subparsers.add_parser(
+        "entries", help="list the journal entries", aliases=["e"]
+    )
+    sub.set_defaults(action=entries)
+    # depends on my other script `git-nav-log`
+    sub = subparsers.add_parser(
+        "nav-entries", help="navigate the journal entries", aliases=["n"]
+    )
+    sub.set_defaults(action=nav_entries)
+    sub = subparsers.add_parser("write", help="write a new entry", aliases=["w"])
+    sub.set_defaults(action=write)
+    sub = subparsers.add_parser("backup", help="sync the new entries", aliases=["b"])
+    sub.set_defaults(action=backup)
+    return parser
+
+
+if __name__ == "__main__":
+    try:
+        workdir = os.environ["JOURNAL_REPO"]
+    except KeyError:
+        exit(
+            "Set the environment variable 'JOURNAL_REPO' to a path pointing "
+            "to a git repository which will be used as a journal."
+        )
+    exit(main(build_parser(workdir)))
