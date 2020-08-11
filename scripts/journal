@@ -33,7 +33,7 @@ def main(parser: argparse.ArgumentParser):
     return args.action(args, argv)
 
 
-def git(func):
+def journal(func):
     def inner(args, argv):
         command = ["git"] + func(args, argv)
         process = subprocess.run(command, cwd=args.repository)
@@ -42,14 +42,14 @@ def git(func):
     return inner
 
 
-@git
+@journal
 def read(args, argv):
     if args.ref is None:
         return ["log"] + argv
     return ["show", "--shortstat", args.ref] + argv
 
 
-@git
+@journal
 def entries(args, argv):
     return [
         "log",
@@ -58,17 +58,17 @@ def entries(args, argv):
     ] + argv
 
 
-@git
+@journal
 def nav_entries(args, argv):
     return ["nav-log"] + argv
 
 
-@git
+@journal
 def write(args, argv):
     return ["commit", "--allow-empty"] + argv
 
 
-@git
+@journal
 def backup(args, argv):
     return ["push"] + argv
 
@@ -101,24 +101,31 @@ def build_parser(workdir: str):
         default=workdir,
         help="override the JOURNAL_REPO environment variable",
     )
-    subparsers = parser.add_subparsers(required=False, description="")
+    subparsers = parser.add_subparsers(
+        required=False,
+        description="can be completed by any valid git options for the command it's aliasing",
+    )
     sub = subparsers.add_parser(
-        "read", help="use to read the whole journal", aliases=["r"]
+        "read", help="use to read the whole journal [log|show]", aliases=["r"]
     )
     sub.add_argument("ref", help="commit reference", nargs="?")
     sub.set_defaults(action=read)
     sub = subparsers.add_parser(
-        "entries", help="list the journal entries", aliases=["e"]
+        "entries", help="list the journal entries [log]", aliases=["e"]
     )
     sub.set_defaults(action=entries)
     # depends on my other script `git-nav-log`
     sub = subparsers.add_parser(
-        "nav-entries", help="navigate the journal entries", aliases=["n"]
+        "nav-entries", help="navigate the journal entries [git-nav-log]", aliases=["n"]
     )
     sub.set_defaults(action=nav_entries)
-    sub = subparsers.add_parser("write", help="write a new entry", aliases=["w"])
+    sub = subparsers.add_parser(
+        "write", help="write a new entry [commit]", aliases=["w"]
+    )
     sub.set_defaults(action=write)
-    sub = subparsers.add_parser("backup", help="sync the new entries", aliases=["b"])
+    sub = subparsers.add_parser(
+        "backup", help="sync the new entries [push]", aliases=["b"]
+    )
     sub.set_defaults(action=backup)
     return parser
 
