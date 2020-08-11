@@ -40,10 +40,11 @@ def build_parser(workdir: str):
     parser.add_argument(
         "-r",
         "--repository",
+        metavar="path",
         default=workdir,
         help="override the JOURNAL_REPO environment variable",
     )
-    subparsers = parser.add_subparsers()
+    subparsers = parser.add_subparsers(required=False, description="")
     read = subparsers.add_parser("read", help="use to read the whole journal")
     read.set_defaults(alias=["log"])
     entries = subparsers.add_parser("entries", help="list the journal entries")
@@ -54,6 +55,11 @@ def build_parser(workdir: str):
             "--format=%C(red)%h%Creset %C(green)%ad%Creset %s",
         ]
     )
+    # depends on my other script `git-nav-log`
+    nav_entries = subparsers.add_parser(
+        "nav-entries", help="navigate the journal entries"
+    )
+    nav_entries.set_defaults(alias=["nav-log"])
     write = subparsers.add_parser("write", help="write a new entry")
     write.set_defaults(alias=["commit", "--allow-empty"])
     backup = subparsers.add_parser("backup", help="sync the new entries")
