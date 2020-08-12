@@ -21,12 +21,11 @@ for the command it's aliasing:
 import argparse
 import os
 import subprocess
-import sys
 import textwrap
 
 
 def main(parser: argparse.ArgumentParser):
-    args, argv = parser.parse_known_args(sys.argv[1:])
+    args, argv = parser.parse_known_args()
     if args.action is None:
         parser.print_help()
         return 0
@@ -74,6 +73,15 @@ def backup(args, argv):
 
 
 def build_parser(workdir: str):
+    def program_is_available(program):
+        def is_exe(path):
+            return os.path.isfile(path) and os.access(path, os.X_OK)
+
+        return any(
+            is_exe(os.path.join(path, program))
+            for path in os.environ["PATH"].split(os.pathsep)
+        )
+
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent(
@@ -86,10 +94,10 @@ def build_parser(workdir: str):
         epilog=textwrap.dedent(
             """
             usage examples:
-
               journal entries --after=2019
               journal read <shasum>
-              journal read --before=2017
+              journal write -m "a quick passing thought"
+              journal read --reverse --after=2017 --before=2018-02-03
             """
         ),
     )
@@ -102,31 +110,37 @@ def build_parser(workdir: str):
         help="override the JOURNAL_REPO environment variable",
     )
     subparsers = parser.add_subparsers(
-        required=False,
         description="can be completed by any valid git options for the command it's aliasing",
     )
-    sub = subparsers.add_parser(
-        "read", help="use to read the whole journal [log|show]", aliases=["r"]
+
+    def add_subcommand(name, *, help, aliases, action):
+        sub = subparsers.add_parser(name, help=help, aliases=aliases)
+        sub.set_defaults(action=action)
+        return sub
+
+    add_subcommand(
+        "read",
+        help="use to read the whole journal [log|show]",
+        aliases=["r"],
+        action=read,
+    ).add_argument("ref", help="commit reference", nargs="?")
+    add_subcommand(
+        "entries", help="list the journal entries [log]", aliases=["e"], action=entries
     )
-    sub.add_argument("ref", help="commit reference", nargs="?")
-    sub.set_defaults(action=read)
-    sub = subparsers.add_parser(
-        "entries", help="list the journal entries [log]", aliases=["e"]
+    # depends on my other script `git-nav-log` and `fzf`
+    if all(map(program_is_available, ["git-nav-log", "fzf"])):
+        add_subcommand(
+            "nav-entries",
+            help="navigate the journal entries [git-nav-log]",
+            aliases=["n"],
+            action=nav_entries,
+        )
+    add_subcommand(
+        "write", help="write a new entry [commit]", aliases=["w"], action=write
     )
-    sub.set_defaults(action=entries)
-    # depends on my other script `git-nav-log`
-    sub = subparsers.add_parser(
-        "nav-entries", help="navigate the journal entries [git-nav-log]", aliases=["n"]
+    add_subcommand(
+        "backup", help="sync the new entries [push]", aliases=["b"], action=backup
     )
-    sub.set_defaults(action=nav_entries)
-    sub = subparsers.add_parser(
-        "write", help="write a new entry [commit]", aliases=["w"]
-    )
-    sub.set_defaults(action=write)
-    sub = subparsers.add_parser(
-        "backup", help="sync the new entries [push]", aliases=["b"]
-    )
-    sub.set_defaults(action=backup)
     return parser
 
 
