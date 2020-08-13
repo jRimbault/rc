@@ -21,11 +21,11 @@ for the command it's aliasing:
 import argparse
 import os
 import subprocess
+import sys
 import textwrap
 
 
-def main(parser: argparse.ArgumentParser):
-    args, argv = parser.parse_known_args()
+def main(args, argv, parser):
     if args.action is None or args.repository is None:
         parser.print_help()
         return 0
@@ -34,8 +34,8 @@ def main(parser: argparse.ArgumentParser):
 
 def journal(func):
     def inner(args, argv):
-        command = ["git"] + func(args, argv)
-        process = subprocess.run(command, cwd=args.repository)
+        for command in func(args, argv):
+            process = subprocess.run(command, cwd=args.repository)
         return process.returncode
 
     return inner
@@ -44,13 +44,15 @@ def journal(func):
 @journal
 def read(args, argv):
     if args.ref is None:
-        return ["log"] + argv
-    return ["show", "--shortstat", args.ref] + argv
+        yield ["git", "log"] + argv
+    else:
+        yield ["git", "show", "--shortstat", args.ref] + argv
 
 
 @journal
 def entries(args, argv):
-    return [
+    yield [
+        "git",
         "log",
         "--date=short",
         "--format=%C(red)%h%Creset %C(green)%ad%Creset %s",
@@ -59,20 +61,22 @@ def entries(args, argv):
 
 @journal
 def nav_entries(args, argv):
-    return ["nav-log"] + argv
+    yield ["git-nav-log"] + argv
 
 
 @journal
 def write(args, argv):
-    return ["commit", "--allow-empty"] + argv
+    yield ["git", "commit", "--allow-empty"] + argv
 
 
 @journal
 def backup(args, argv):
-    return ["push"] + argv
+    yield ["git", "pull", "-r"]
+    yield ["git", "push"]
+    yield ["git", "status"]
 
 
-def build_parser():
+def parse_args(argv):
     def program_is_available(program):
         def is_exe(path):
             return os.path.isfile(path) and os.access(path, os.X_OK)
@@ -139,11 +143,9 @@ def build_parser():
     add_subcommand(
         "write", help="write a new entry [commit]", aliases=["w"], action=write
     )
-    add_subcommand(
-        "backup", help="sync the new entries [push]", aliases=["b"], action=backup
-    )
-    return parser
+    add_subcommand("backup", help="sync the new entries", aliases=["b"], action=backup)
+    return (*parser.parse_known_args(argv), parser)
 
 
 if __name__ == "__main__":
-    exit(main(build_parser()))
+    exit(main(*parse_args(sys.argv[1:])))
