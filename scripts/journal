@@ -26,7 +26,7 @@ import textwrap
 
 def main(parser: argparse.ArgumentParser):
     args, argv = parser.parse_known_args()
-    if args.action is None:
+    if args.action is None or args.repository is None:
         parser.print_help()
         return 0
     return args.action(args, argv)
@@ -72,7 +72,7 @@ def backup(args, argv):
     return ["push"] + argv
 
 
-def build_parser(workdir: str):
+def build_parser():
     def program_is_available(program):
         def is_exe(path):
             return os.path.isfile(path) and os.access(path, os.X_OK)
@@ -87,6 +87,7 @@ def build_parser(workdir: str):
         description=textwrap.dedent(
             """
             Script meant to interact with a git repository used as a journal.
+
             Set the environment variable 'JOURNAL_REPO' to a path pointing
             to a git repository which will be used as the journal.
             """
@@ -106,7 +107,7 @@ def build_parser(workdir: str):
         "-r",
         "--repository",
         metavar="path",
-        default=workdir,
+        default=os.environ.get("JOURNAL_REPO"),
         help="override the JOURNAL_REPO environment variable",
     )
     subparsers = parser.add_subparsers(
@@ -145,11 +146,4 @@ def build_parser(workdir: str):
 
 
 if __name__ == "__main__":
-    try:
-        workdir = os.environ["JOURNAL_REPO"]
-    except KeyError:
-        exit(
-            "Set the environment variable 'JOURNAL_REPO' to a path pointing "
-            "to a git repository which will be used as a journal."
-        )
-    exit(main(build_parser(workdir)))
+    exit(main(build_parser()))
