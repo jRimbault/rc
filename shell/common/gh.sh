@@ -37,9 +37,9 @@ __proto_gh()
 
   if [[ ! -d "$local_path" ]]; then
      if [[ "$proto" == "ssh" ]]; then
-      git clone "git@$url:$user/$repo.git" "$local_path"
+      git clone --recurse-submodules -j8 "git@$url:$user/$repo.git" "$local_path"
      elif [[ "$proto" == "https" ]]; then
-      git clone "https://$url/$user/$repo.git" "$local_path"
+      git clone --recurse-submodules -j8 "https://$url/$user/$repo.git" "$local_path"
      else
       echo "protocol must be set to ssh or https"
     fi

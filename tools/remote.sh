@@ -16,7 +16,7 @@ has()
 git_clone()
 {
   mkdir -p "$CLONE_DIR"
-  env git clone https://github.com/jRimbault/rc.git "$CLONE_DIR/rc" || {
+  env git clone --recurse-submodules -j8 "https://github.com/jRimbault/rc.git" "$CLONE_DIR/rc" || {
     echo "Error: git clone of configuration repo failed"
     exit 1
   }

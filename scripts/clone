@@ -17,18 +17,13 @@ def main(args):
 
 def git_clone(user, repo):
     clone_dir = os.path.join(os.environ["GH_BASE_DIR"], user, repo)
-    command = f"git clone git@github.com:{user}/{repo}.git {clone_dir}"
-    return subprocess.call(command.split())
+    command = f"git clone --recurse-submodules -j8 git@github.com:{user}/{repo}.git {clone_dir}"
+    return subprocess.run(command.split()).returncode
 
 
 def user_repos(user):
     repos = f"https://api.github.com/users/{user}/repos"
-    return (r["name"] for r in get(repos))
-
-
-def get(url):
-    r = urlopen(url)
-    return json.loads(r.read())
+    return (r["name"] for r in json.load(urlopen(repos)))
 
 
 def fuzzy_selector(words: list, prompt="> ") -> str:
