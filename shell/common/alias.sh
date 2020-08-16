@@ -57,8 +57,9 @@ alias http-server='python3 -m http.server --bind 127.0.0.1 8080'
 alias p='goto_project'
 
 # text files
-alias vi="vim"
 alias sed-trailing-whitespace="sed 's/[[:space:]]\\+$//'"
+alias vi='$EDITOR'
 
 # media
 alias playlist-dl='youtube-dl --extract-audio --ignore-errors --audio-format mp3 -o "%(autonumber)s - %(title)s.%(ext)s"'
+
