@@ -67,6 +67,7 @@ function gss { git status -s $args }
 function gst { git status $args }
 function gwch { git whatchanged -p --abbrev-commit --pretty=medium $args }
 function gcurrent { git rev-parse HEAD $args }
+function gh($user, $repo) { cd "$HOME\Documents\Github\$user\$repo" }
 
 $hosts = @(
     'Visual Studio Code Host',
