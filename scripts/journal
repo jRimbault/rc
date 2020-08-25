@@ -55,7 +55,7 @@ def entries(args, argv):
         "git",
         "log",
         "--date=short",
-        "--format=%C(red)%h%Creset %C(green)%ad%Creset %s",
+        "--format='%C(red)%h%Creset %C(green)%ad%Creset %s'",
     ] + argv
 
 
