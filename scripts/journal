@@ -25,10 +25,7 @@ import sys
 import textwrap
 
 
-def main(args, argv, parser):
-    if args.repository is None:
-        parser.print_help()
-        return 0
+def main(args, argv):
     return args.action(args, argv)
 
 
@@ -144,7 +141,10 @@ def parse_args(argv):
         "write", help="write a new entry [commit]", aliases=["w"], action=write
     )
     add_subcommand("backup", help="sync the new entries", aliases=["b"], action=backup)
-    return (*parser.parse_known_args(argv), parser)
+    args, argv = parser.parse_known_args(argv)
+    if args.repository is None:
+        args.action = lambda _, __: parser.print_help()
+    return args, argv
 
 
 if __name__ == "__main__":
