@@ -16,3 +16,5 @@
     branches-sorted = branch -v --color=always --sort=-committerdate
     diff-last = diff HEAD~1
     ds = diff --stat
+[push]
+	followTags = true

@@ -10,3 +10,5 @@ lcov.info
 .mypy_cache/
 .venv/
 *.dat
+perf.data*
+flamegraph.svg
