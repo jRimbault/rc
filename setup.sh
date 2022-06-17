@@ -54,7 +54,7 @@ update()
 set_example_env()
 {
   cat >> "$HOME/.env" <<- EOM
-export GH_BASE_DIR="\$HOME/Documents/Github"
+export GH_BASE_DIR="\$HOME/Documents/github.com"
 export GH_PROTO="https"
 EOM
 }
